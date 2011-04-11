@@ -1,0 +1,39 @@
+What is ilixi?
+==============
+Ilixi is an open-source lightweight GUI framework and it is 
+designed with linux based embedded devices in mind. Ilixi 
+uses DirectFB at its core in order to render all graphics 
+content to a linux framebuffer device. This eliminates the 
+need for the X server. Although DirectFB provides basic 
+raster graphics functionality, Cairo and Pango are used for 
+rendering 2D graphics and text respectively.
+
+More information about ilixi can be found at:
+		
+	http://www.ilixi.org
+
+Build instructions
+==================
+This section briefly describes the steps for building ilixi. 
+DirectFB should be compiled with multi application core support. 
+For information on building dependencies please refer to ilixi 
+web site (http://www.ilixi.org).
+
+Once all dependencies are successfully installed on your system 
+you could build and install ilixi as follows:
+
+	./configure
+	make
+	sudo make install
+
+Ilixi uses Doxygen for generating its documentation from source files. 
+If your system supports it, you could generate an up-to-date html 
+documentation as follows:
+
+	./configure
+	make doxygen-doc
+
+License
+=======
+Ilixi is free software and is available to be redistributed and/or 
+modified under the terms of the GNU General Public License (GPL) version 3.

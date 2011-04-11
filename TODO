@@ -1,0 +1,24 @@
+Application
+	Update queue (merge regions)
+	
+Layouts
+	HBox, VBox and Grid optimisations.
+	Handle min/max in Grid.
+
+Image and Video
+	Animated icons
+	GStreamer/FFMpeg controller
+
+Widgets
+	ToolBar
+	List
+	Table
+	
+Maestro
+	Fullscreen application mode
+	Single instance of Designer.
+
+Command line options
+	--install/--uninstall
+	--designer=SimpleDesigner
+	--styleSheet=sheet.xml
