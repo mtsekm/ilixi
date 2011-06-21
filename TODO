@@ -1,24 +1,31 @@
-Application
-	Update queue (merge regions)
-	
+o Remote control navigation
+o Tweens and other animation sequences
+
+o Prevent defunct apps in Home
+o Implement copy constructors
+o Inline optimisations
+o An easy to use SQLITE3Driver
+o UI layout/theming functionality
+
 Layouts
-	HBox, VBox and Grid optimisations.
-	Handle min/max in Grid.
+	o HBox, VBox and Grid optimisations
+	o Handle min/max in GridLayout
+	o PreferredSize in GridLayout
 
 Image and Video
-	Animated icons
-	GStreamer/FFMpeg controller
+	o Animated images
+	o Flicker free video playback
 
 Widgets
-	ToolBar
-	List
-	Table
+	o ScrollArea
+	o ToolBar
+	o List
+	o Table
+
+Command line options for Application
+	o --designer=SimpleDesigner
+	o --styleSheet=sheet.xml
 	
 Maestro
-	Fullscreen application mode
-	Single instance of Designer.
+	o Fullscreen application mode
 
-Command line options
-	--install/--uninstall
-	--designer=SimpleDesigner
-	--styleSheet=sheet.xml

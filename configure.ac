@@ -75,13 +75,14 @@ AC_FUNC_ERROR_AT_LINE
 
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.4.9
-CAIRO_REQ_VERSION=1.10.0
+CAIRO_REQ_VERSION=1.8.10
 PANGO_REQ_VERSION=1.28.1
-SIGC_REQ_VERSION=2.2.8
-LIBXML_REQ_VERSION=2.7.8
+SIGC_REQ_VERSION=2.2.4.2
+LIBXML_REQ_VERSION=2.7.7
+SQLITE_REQ_VERSION=3.7.2
 
-AC_MSG_NOTICE([checking if DirectFB, cairo-directfb, pangocairo, SigC++ and libxml2 are installed...])
-PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION)
+AC_MSG_NOTICE([checking if DirectFB, cairo-directfb, pangocairo, SigC++, libxml2 and sqlite3 are installed...])
+PKG_CHECK_MODULES(DEPS, directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION)
 
 ######################################################################
 # DOXYGEN SUPPORT
@@ -121,21 +122,20 @@ AC_CONFIG_FILES([ \
 		ilixi/ilixiConfig.h \
 		ilixi/core/Makefile \
 		ilixi/graphics/Makefile \
+		ilixi/lib/Makefile \
 		ilixi/types/Makefile \
 		ilixi/ui/Makefile \
 		bin/Makefile \
 		bin/osk/Makefile \
 		bin/home/Makefile \
-		bin/monitor/Makefile \
 		bin/statusbar/Makefile \
-		bin/widget_gallery/Makefile \
 		ilixi-$VERSION.pc:ilixi.pc.in
 ])
 AC_OUTPUT
 
 AC_MSG_RESULT([
    ilixi configuration summary
-   ------------------------- 
+  -----------------------------
 	Version                  : $VERSION
 	Install prefix           : $prefix
 	Build shared libs        : $enable_shared
@@ -144,27 +144,25 @@ AC_MSG_RESULT([
 	CFLAGS                   : $CFLAGS
 	LDFLAGS                  : $LDFLAGS
 	Logging enabled          : $ILIXI_LOGGER_ENABLED
-	Log debug message        : $ILIXI_LOG_DEBUG_ENABLED
+	Debug messages enabled   : $ILIXI_LOG_DEBUG_ENABLED
 	   
-    Copyright 2010, 2011 Tarik Sekmen.
-
-    All Rights Reserved.
-
-    Written by Tarik Sekmen <tarik@ilixi.org>.
-
-    ilixi is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    ilixi is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+	   
+	   
+	Copyright 2010, 2011 Tarik Sekmen <tarik@ilixi.org>.
+	
+	ilixi is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	ilixi is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
+	
+	You should have received a copy of the GNU Lesser General Public License
+	along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
+	    
     http://www.ilixi.org
 
 Type \`make' to build ilixi. 

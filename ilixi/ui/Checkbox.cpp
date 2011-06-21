@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Checkbox.h"
@@ -125,13 +127,15 @@ Checkbox::updateTextLayoutGeometry()
 {
   int x = 2 * designer()->hint(CheckBoxOffset)
       + designer()->hint(CheckBoxWidth);
-  int y = (height() - textExtents().height()) / 2;
 
   if (hasIcon())
     {
       _iconPosition.moveTo(x, (height() - icon()->height()) / 2);
       x += designer()->hint(CheckBoxOffset) + icon()->width();
     }
+
+  int th = textHeightForWidth(width() - x);
+  int y = (height() - th) / 2;
 
   setTextGeometry(x, y, width() - x, height());
 }

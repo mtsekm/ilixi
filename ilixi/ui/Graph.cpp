@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Graph.h"
@@ -54,9 +56,9 @@ GraphCurve::GraphCurve(std::string title, double* values, int size,
 }
 
 GraphCurve::GraphCurve(const GraphCurve& curve) :
-  _title(curve._title), _symbolStyle(curve._symbolStyle), _lineStyle(
-      curve._lineStyle), _size(curve._size), _values(new double[curve._size]),
-      _curvePen(curve._curvePen)
+  _title(curve._title), _symbolStyle(curve._symbolStyle),
+      _lineStyle(curve._lineStyle), _size(curve._size),
+      _values(new double[curve._size]), _curvePen(curve._curvePen)
 {
   std::copy(curve._values, curve._values + curve._size, _values);
 }
@@ -324,9 +326,9 @@ GraphArea::compose(const Rectangle& rect)
           cairo_line_to(context, cXP, cYP);
           cairo_line_to(context, cXP, y2);
           cairo_line_to(context, x, y2);
-          cairo_line_to(context, x, y2 - (_graph->_curves[curve]->values()[0]
-              * _yScale));
-//          cairo_close_path(context);
+          cairo_line_to(context, x,
+              y2 - (_graph->_curves[curve]->values()[0] * _yScale));
+          //          cairo_close_path(context);
           cairo_fill(context);
         }
 
@@ -590,12 +592,13 @@ Graph::updateGraphGeometry()
   _xTitle->setGeometry(0, height() - xTitleSize.height(), width(),
       _title->textExtents().height());
 
-  _legend->setGeometry(width() - legendSize.width(), (height()
-      - legendSize.height()) / 2, legendSize.width(), legendSize.height());
+  _legend->setGeometry(width() - legendSize.width(),
+      (height() - legendSize.height()) / 2, legendSize.width(),
+      legendSize.height());
 
-  _graphArea->setGeometry(_yTitle->width(), _title->height(), width()
-      - (_yTitle->width() + _legend->width()), height() - (_title->height()
-      + _xTitle->height()));
+  _graphArea->setGeometry(_yTitle->width(), _title->height(),
+      width() - (_yTitle->width() + _legend->width()),
+      height() - (_title->height() + _xTitle->height()));
 
   //  _graphArea->setGeometry(_yTitle->width(), _title->height(), width()
   //      - _yTitle->width(), height() - (_title->height() + _xTitle->height()

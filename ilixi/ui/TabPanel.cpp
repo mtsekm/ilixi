@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/TabPanel.h"
@@ -43,8 +45,8 @@ TabPanelButton::preferredSize() const
   if (text().empty() && !hasIcon())
     return designer()->sizeHint(ButtonSizeHint);
 
-  int w = 2 * (std::max(designer()->hint(BorderWidth), designer()->hint(
-      FrameBorderRadius)) + designer()->hint(ButtonOffset));
+  int w = 2 * (std::max(designer()->hint(BorderWidth),
+      designer()->hint(FrameBorderRadius)) + designer()->hint(ButtonOffset));
 
   if (hasIcon())
     w += icon()->width() + designer()->hint(ButtonOffset);
@@ -72,8 +74,8 @@ TabPanelButton::compose(const Rectangle& rect)
 void
 TabPanelButton::updateTextLayoutGeometry()
 {
-  int border = std::max(designer()->hint(BorderWidth), designer()->hint(
-      FrameBorderRadius));
+  int border = std::max(designer()->hint(BorderWidth),
+      designer()->hint(FrameBorderRadius));
   int x = border + designer()->hint(ButtonOffset);
   int y = designer()->hint(BorderWidth) + 3;
 
@@ -95,8 +97,8 @@ TabPanel::TabPanel(Widget* parent) :
   setBorderWidth(1);
   setConstraints(NoConstraint, MinimumConstraint);
   setInputMethod(PointerInputOnly);
-  sigGeometryUpdated.connect(sigc::mem_fun(this,
-      &TabPanel::updateChildrenFrameGeometry));
+  sigGeometryUpdated.connect(
+      sigc::mem_fun(this, &TabPanel::updateChildrenFrameGeometry));
 }
 
 TabPanel::~TabPanel()
@@ -135,8 +137,10 @@ TabPanel::preferredSize() const
       if (wS.height() > h)
         h = wS.height();
     }
-  return Size(w + 2 * (borderHorizontalOffset() + _margin), h
-      + designer()->hint(TabPanelButtonHeight) + 2 * (borderWidth() + _margin));
+  return Size(
+      w + 2 * (borderHorizontalOffset() + _margin),
+      h + designer()->hint(TabPanelButtonHeight) + 2
+          * (borderWidth() + _margin));
 }
 
 int
@@ -215,11 +219,14 @@ TabPanel::addPage(Widget* widget, std::string label, std::string iconPath)
   page.widget = widget;
   page.button = new TabPanelButton(label, this);
   page.button->setChecked(true);
-  page.button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this,
-      &TabPanel::setCurrentPage), _currentIndex));
+  page.button->sigClicked.connect(
+      sigc::bind<int>(sigc::mem_fun(this, &TabPanel::setCurrentPage),
+          _currentIndex));
   if (!iconPath.empty())
-    page.button->setIcon(iconPath, Size(designer()->hint(TabPanelButtonHeight)
-        - 6, designer()->hint(TabPanelButtonHeight) - 6));
+    page.button->setIcon(
+        iconPath,
+        Size(designer()->hint(TabPanelButtonHeight) - 6,
+            designer()->hint(TabPanelButtonHeight) - 6));
 
   _pages.push_back(page);
 
@@ -276,8 +283,10 @@ TabPanel::removePage(int index)
 void
 TabPanel::setPageIcon(int index, std::string iconPath)
 {
-  _pages.at(index).button->setIcon(iconPath, Size(designer()->hint(
-      TabPanelButtonHeight) - 6, designer()->hint(TabPanelButtonHeight) - 6));
+  _pages.at(index).button->setIcon(
+      iconPath,
+      Size(designer()->hint(TabPanelButtonHeight) - 6,
+          designer()->hint(TabPanelButtonHeight) - 6));
 }
 
 void

@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/SpinBox.h"
@@ -77,15 +79,15 @@ SpinBox::SpinBox(Widget* parent) :
   button1 = new DirectionalButton(DirectionalButton::PlusMinusButton, Left,
       this);
   button1->setDisabled();
-  button1->sigPressed.connect(sigc::bind<bool>(sigc::mem_fun(this,
-      &SpinBox::startSpin), false));
+  button1->sigPressed.connect(
+      sigc::bind<bool>(sigc::mem_fun(this, &SpinBox::startSpin), false));
   button1->sigReleased.connect(sigc::mem_fun(this, &SpinBox::stopSpin));
   addChild(button1);
 
   button2 = new DirectionalButton(DirectionalButton::PlusMinusButton, Right,
       this);
-  button2->sigPressed.connect(sigc::bind<bool>(sigc::mem_fun(this,
-      &SpinBox::startSpin), true));
+  button2->sigPressed.connect(
+      sigc::bind<bool>(sigc::mem_fun(this, &SpinBox::startSpin), true));
   button2->sigReleased.connect(sigc::mem_fun(this, &SpinBox::stopSpin));
   addChild(button2);
 
@@ -99,8 +101,8 @@ SpinBox::SpinBox(Widget* parent) :
   sigValueChanged.connect(sigc::mem_fun(this, &SpinBox::disableButtons));
   setConstraints(MinimumConstraint, FixedConstraint);
   setInputMethod(OSKInputEnabled);
-  sigGeometryUpdated.connect(sigc::mem_fun(this,
-      &SpinBox::updateSpinBoxGeometry));
+  sigGeometryUpdated.connect(
+      sigc::mem_fun(this, &SpinBox::updateSpinBoxGeometry));
 }
 
 SpinBox::~SpinBox()

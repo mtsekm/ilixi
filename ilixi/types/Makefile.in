@@ -61,7 +61,7 @@ am_libilixi_types_la_OBJECTS = libilixi_types_la-Brush.lo \
 	libilixi_types_la-Margin.lo libilixi_types_la-Pen.lo \
 	libilixi_types_la-Point.lo libilixi_types_la-RadialGradient.lo \
 	libilixi_types_la-RadioGroup.lo libilixi_types_la-Rectangle.lo \
-	libilixi_types_la-Size.lo
+	libilixi_types_la-Size.lo libilixi_types_la-Video.lo
 libilixi_types_la_OBJECTS = $(am_libilixi_types_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -280,7 +280,8 @@ libilixi_types_la_SOURCES = Brush.cpp \
 									RadialGradient.cpp \
 									RadioGroup.cpp \
 									Rectangle.cpp \
-									Size.cpp
+									Size.cpp \
+									Video.cpp
 
 ilixi_includedir = $(includedir)/$(PACKAGE)-$(VERSION)/types
 nobase_ilixi_include_HEADERS = Brush.h \
@@ -298,7 +299,8 @@ nobase_ilixi_include_HEADERS = Brush.h \
 									RadialGradient.h \
 									RadioGroup.h \
 									Rectangle.h \
-									Size.h
+									Size.h \
+									Video.h
 
 all: all-am
 
@@ -366,6 +368,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_types_la-RadioGroup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_types_la-Rectangle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_types_la-Size.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_types_la-Video.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -485,6 +488,13 @@ libilixi_types_la-Size.lo: Size.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Size.cpp' object='libilixi_types_la-Size.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_types_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_types_la-Size.lo `test -f 'Size.cpp' || echo '$(srcdir)/'`Size.cpp
+
+libilixi_types_la-Video.lo: Video.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_types_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_types_la-Video.lo -MD -MP -MF $(DEPDIR)/libilixi_types_la-Video.Tpo -c -o libilixi_types_la-Video.lo `test -f 'Video.cpp' || echo '$(srcdir)/'`Video.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_types_la-Video.Tpo $(DEPDIR)/libilixi_types_la-Video.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Video.cpp' object='libilixi_types_la-Video.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_types_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_types_la-Video.lo `test -f 'Video.cpp' || echo '$(srcdir)/'`Video.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

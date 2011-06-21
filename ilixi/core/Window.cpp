@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "core/Window.h"
@@ -33,6 +35,7 @@ DFBDisplayLayerConfig Window::_layerConfig;
 const DFBSurfacePixelFormat Window::_pixelFormat = DSPF_ARGB;
 const bool Window::_doubleBuffered = true;
 int Window::_windowCount = 0;
+Window::windowList Window::_windowList;
 
 Window* Window::_activeWindow = NULL;
 pthread_mutex_t Window::_windowMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -72,7 +75,7 @@ Window::flipSurface(const DFBRegion& region)
 }
 
 UIManager* const
-Window::windowFocusManager() const
+Window::windowUIManager() const
 {
   return _windowUIManager;
 }
@@ -99,8 +102,13 @@ Window::showWindow(TransitionStyle style, int value1, int value2)
     _parentWindow->_window->DetachEventBuffer(_window, _buffer);
 
   if (_activeWindow)
-    _activeWindow->_windowUIManager->setGrabbedWidget(NULL);
+    {
+      _activeWindow->_windowUIManager->setGrabbedWidget(NULL);
+      _activeWindow->_windowUIManager->setExposedWidget(NULL,
+          PointerEvent(PointerMotion, 0, 0));
+    }
   _activeWindow = this;
+  _activeWindow->_windowUIManager->selectNext();
 
   // make visible
   _window->RaiseToTop(_window);
@@ -127,14 +135,16 @@ Window::showWindow(TransitionStyle style, int value1, int value2)
               _window->MoveTo(_window, 0, i);
               usleep(1000);
             }
+          _window->MoveTo(_window, 0, value2);
         }
-      else if (value2 < value1)
+      else if (value1 > value2)
         {
           for (int i = value1; i >= value2; i -= 5)
             {
               _window->MoveTo(_window, 0, i);
               usleep(1000);
             }
+          _window->MoveTo(_window, 0, value2);
         }
     }
 
@@ -173,17 +183,19 @@ Window::hideWindow(TransitionStyle style, int value1, int value2)
         {
           for (int i = value1; i <= value2; i += 5)
             {
-              _window->Move(_window, 0, 5);
+              _window->MoveTo(_window, 0, i);
               usleep(1000);
             }
+          _window->MoveTo(_window, 0, value2);
         }
       else if (value1 > value2)
         {
           for (int i = value1; i >= value2; i -= 5)
             {
-              _window->Move(_window, 0, -5);
+              _window->MoveTo(_window, 0, i);
               usleep(1000);
             }
+          _window->MoveTo(_window, 0, value2);
         }
       _window->SetOpacity(_window, 0);
     }
@@ -283,7 +295,7 @@ Window::initDFBWindow(int x, int y, int w, int h, bool dialog)
     }
   else if (_window)
     {
-      ILOG_NOTICE("DirectFB window interface is already initialised!");
+      ILOG_DEBUG("DirectFB window interface is already initialised!");
       _windowUIManager->reset();
       return;
     }
@@ -292,9 +304,10 @@ Window::initDFBWindow(int x, int y, int w, int h, bool dialog)
       ILOG_DEBUG( "Initialising DirectFB window interfaces...");
 
       // modify window description
-      _windowDesc.flags = (DFBWindowDescriptionFlags) (DWDESC_POSX
-          | DWDESC_POSY | DWDESC_WIDTH | DWDESC_HEIGHT | DWDESC_CAPS
-          | DWDESC_SURFACE_CAPS | DWDESC_PIXELFORMAT | DWDESC_OPTIONS);
+      _windowDesc.flags = (DFBWindowDescriptionFlags)(
+          DWDESC_POSX | DWDESC_POSY | DWDESC_WIDTH | DWDESC_HEIGHT
+              | DWDESC_CAPS | DWDESC_SURFACE_CAPS | DWDESC_PIXELFORMAT
+              | DWDESC_OPTIONS);
       _windowDesc.posx = x;
       _windowDesc.posy = y < 0 ? AppBase::appInstance->getStatusBarHeight() : y;
       _windowDesc.width = w ? w : _layerConfig.width;
@@ -302,25 +315,69 @@ Window::initDFBWindow(int x, int y, int w, int h, bool dialog)
           - AppBase::appInstance->getStatusBarHeight();
       _windowDesc.pixelformat = _pixelFormat;
       if (_doubleBuffered)
-        _windowDesc.caps = (DFBWindowCapabilities) (DWCAPS_DOUBLEBUFFER
-            | DWCAPS_ALPHACHANNEL);
+        _windowDesc.caps = (DFBWindowCapabilities)(
+            DWCAPS_DOUBLEBUFFER | DWCAPS_ALPHACHANNEL);
       else
-        _windowDesc.caps = (DFBWindowCapabilities) (DWCAPS_ALPHACHANNEL);
-      _windowDesc.surface_caps = (DFBSurfaceCapabilities) (DSCAPS_PREMULTIPLIED
-          | DSCAPS_FLIPPING);
-      _windowDesc.options = (DFBWindowOptions) (DWOP_ALPHACHANNEL | DWOP_SCALE);
+        _windowDesc.caps = (DFBWindowCapabilities)(DWCAPS_ALPHACHANNEL);
+      _windowDesc.surface_caps = (DFBSurfaceCapabilities)(
+          DSCAPS_PREMULTIPLIED | DSCAPS_FLIPPING);
+      _windowDesc.options = (DFBWindowOptions)(DWOP_ALPHACHANNEL | DWOP_SCALE);
 
       // Create window and set visibility
       DFBCHECK(_layer->CreateWindow(_layer, &_windowDesc, &_window));
       _parentWindow = _activeWindow;
       _window->GetSurface(_window, &_windowSurface);
-      _window->GetID(_window, &_id);
+      _window->GetID(_window, &_DFBwindowID);
       if (dialog)
         _window->SetStackingClass(_window, DWSC_UPPER);
+      pthread_mutex_lock(&_windowMutex);
       _windowCount++;
+      _windowID = _windowList.size();
+      _windowList.push_back(this);
+      pthread_mutex_unlock(&_windowMutex);
       _windowUIManager->reset();
       ILOG_DEBUG( "DirectFB window interfaces are ready.");
     }
+}
+
+void
+Window::releaseWindow()
+{
+  if (_window)
+    {
+      ILOG_DEBUG( "Releasing DirectFB window interfaces...");
+      _windowSurface->Release(_windowSurface);
+      _windowSurface = NULL;
+      _window->Close(_window);
+      _window->Destroy(_window);
+      _window->Release(_window);
+      _window = NULL;
+      pthread_mutex_lock(&_windowMutex);
+      _windowCount--;
+      for (windowListIterator it = _windowList.begin(); it != _windowList.end(); ++it)
+        {
+          if (((Window*) *it)->_windowID == _windowID)
+            {
+              _windowList.erase(it);
+              break;
+            }
+        }
+      pthread_mutex_unlock(&_windowMutex);
+      ILOG_DEBUG( "DirectFB window interfaces are released.");
+    }
+}
+
+bool
+Window::handleWindowEvent(const DFBWindowEvent& event)
+{
+}
+
+void
+Window::cfc()
+{
+  _windowSurface->Clear(_windowSurface, 0, 0, 0, 0);
+  _windowSurface->Flip(_windowSurface, NULL, DSFLIP_FLUSH);
+  _windowSurface->Clear(_windowSurface, 0, 0, 0, 0);
 }
 
 void
@@ -340,34 +397,3 @@ Window::releaseDFB()
     }
 }
 
-void
-Window::releaseWindow()
-{
-  if (_window)
-    {
-      ILOG_DEBUG( "Releasing DirectFB window interfaces...");
-      _windowSurface->Release(_windowSurface);
-      _windowSurface = NULL;
-      _window->Close(_window);
-      _window->Destroy(_window);
-      _window->Release(_window);
-      _window = NULL;
-      pthread_mutex_lock(&_windowMutex);
-      _windowCount--;
-      pthread_mutex_unlock(&_windowMutex);
-      ILOG_DEBUG( "DirectFB window interfaces are released.");
-    }
-}
-
-bool
-Window::handleWindowEvent(const DFBWindowEvent& event)
-{
-}
-
-void
-Window::cfc()
-{
-  _windowSurface->Clear(_windowSurface, 0, 0, 0, 0);
-  _windowSurface->Flip(_windowSurface, NULL, DSFLIP_FLUSH);
-  _windowSurface->Clear(_windowSurface, 0, 0, 0, 0);
-}

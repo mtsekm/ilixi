@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_SURFACE_H_
@@ -110,6 +112,23 @@ namespace ilixi
      */
     void
     setGeometry(const Rectangle& geometry);
+
+    /*!
+     * This method is used for modifying the current geometry of DirectFB surface.
+     *
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    void
+    setGeometry(int x, int y, int width, int height);
+
+    /*!
+     * Flips DFB surface.
+     */
+    void
+    flip();
 
     /*!
      * Flips DFB surface.

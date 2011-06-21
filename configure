@@ -15617,13 +15617,14 @@ fi
 
 # Checks for libraries.
 DIRECTFB_REQ_VERSION=1.4.9
-CAIRO_REQ_VERSION=1.10.0
+CAIRO_REQ_VERSION=1.8.10
 PANGO_REQ_VERSION=1.28.1
-SIGC_REQ_VERSION=2.2.8
-LIBXML_REQ_VERSION=2.7.8
+SIGC_REQ_VERSION=2.2.4.2
+LIBXML_REQ_VERSION=2.7.7
+SQLITE_REQ_VERSION=3.7.2
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if DirectFB, cairo-directfb, pangocairo, SigC++ and libxml2 are installed..." >&5
-$as_echo "$as_me: checking if DirectFB, cairo-directfb, pangocairo, SigC++ and libxml2 are installed..." >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if DirectFB, cairo-directfb, pangocairo, SigC++, libxml2 and sqlite3 are installed..." >&5
+$as_echo "$as_me: checking if DirectFB, cairo-directfb, pangocairo, SigC++, libxml2 and sqlite3 are installed..." >&6;}
 
 
 
@@ -15752,12 +15753,12 @@ if test -n "$DEPS_CFLAGS"; then
     pkg_cv_DEPS_CFLAGS="$DEPS_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"directfb >= \$DIRECTFB_REQ_VERSION cairo-directfb >= \$CAIRO_REQ_VERSION pangocairo >= \$PANGO_REQ_VERSION sigc++-2.0 >= \$SIGC_REQ_VERSION libxml-2.0 >= \$LIBXML_REQ_VERSION\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"directfb >= \$DIRECTFB_REQ_VERSION cairo-directfb >= \$CAIRO_REQ_VERSION pangocairo >= \$PANGO_REQ_VERSION sigc++-2.0 >= \$SIGC_REQ_VERSION libxml-2.0 >= \$LIBXML_REQ_VERSION sqlite3 >= \$SQLITE_REQ_VERSION\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_DEPS_CFLAGS=`$PKG_CONFIG --cflags "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION" 2>/dev/null`
+  pkg_cv_DEPS_CFLAGS=`$PKG_CONFIG --cflags "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -15768,12 +15769,12 @@ if test -n "$DEPS_LIBS"; then
     pkg_cv_DEPS_LIBS="$DEPS_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"directfb >= \$DIRECTFB_REQ_VERSION cairo-directfb >= \$CAIRO_REQ_VERSION pangocairo >= \$PANGO_REQ_VERSION sigc++-2.0 >= \$SIGC_REQ_VERSION libxml-2.0 >= \$LIBXML_REQ_VERSION\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"directfb >= \$DIRECTFB_REQ_VERSION cairo-directfb >= \$CAIRO_REQ_VERSION pangocairo >= \$PANGO_REQ_VERSION sigc++-2.0 >= \$SIGC_REQ_VERSION libxml-2.0 >= \$LIBXML_REQ_VERSION sqlite3 >= \$SQLITE_REQ_VERSION\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_DEPS_LIBS=`$PKG_CONFIG --libs "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION" 2>/dev/null`
+  pkg_cv_DEPS_LIBS=`$PKG_CONFIG --libs "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -15793,14 +15794,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        DEPS_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION" 2>&1`
+	        DEPS_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION" 2>&1`
         else
-	        DEPS_PKG_ERRORS=`$PKG_CONFIG --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION" 2>&1`
+	        DEPS_PKG_ERRORS=`$PKG_CONFIG --print-errors "directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$DEPS_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION) were not met:
+	as_fn_error $? "Package requirements (directfb >= $DIRECTFB_REQ_VERSION cairo-directfb >= $CAIRO_REQ_VERSION pangocairo >= $PANGO_REQ_VERSION sigc++-2.0 >= $SIGC_REQ_VERSION libxml-2.0 >= $LIBXML_REQ_VERSION sqlite3 >= $SQLITE_REQ_VERSION) were not met:
 
 $DEPS_PKG_ERRORS
 
@@ -17784,7 +17785,7 @@ fi
 ILIXI_DATADIR=$datadir/$PACKAGE-$VERSION
 
 
-ac_config_files="$ac_config_files Makefile data/Makefile data/designer/Makefile data/tdesigner/Makefile doc/Makefile doc/resources/Makefile ilixi/Makefile ilixi/ilixiConfig.h ilixi/core/Makefile ilixi/graphics/Makefile ilixi/types/Makefile ilixi/ui/Makefile bin/Makefile bin/osk/Makefile bin/home/Makefile bin/monitor/Makefile bin/statusbar/Makefile bin/widget_gallery/Makefile ilixi-$VERSION.pc:ilixi.pc.in"
+ac_config_files="$ac_config_files Makefile data/Makefile data/designer/Makefile data/tdesigner/Makefile doc/Makefile doc/resources/Makefile ilixi/Makefile ilixi/ilixiConfig.h ilixi/core/Makefile ilixi/graphics/Makefile ilixi/lib/Makefile ilixi/types/Makefile ilixi/ui/Makefile bin/Makefile bin/osk/Makefile bin/home/Makefile bin/statusbar/Makefile ilixi-$VERSION.pc:ilixi.pc.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18968,14 +18969,13 @@ do
     "ilixi/ilixiConfig.h") CONFIG_FILES="$CONFIG_FILES ilixi/ilixiConfig.h" ;;
     "ilixi/core/Makefile") CONFIG_FILES="$CONFIG_FILES ilixi/core/Makefile" ;;
     "ilixi/graphics/Makefile") CONFIG_FILES="$CONFIG_FILES ilixi/graphics/Makefile" ;;
+    "ilixi/lib/Makefile") CONFIG_FILES="$CONFIG_FILES ilixi/lib/Makefile" ;;
     "ilixi/types/Makefile") CONFIG_FILES="$CONFIG_FILES ilixi/types/Makefile" ;;
     "ilixi/ui/Makefile") CONFIG_FILES="$CONFIG_FILES ilixi/ui/Makefile" ;;
     "bin/Makefile") CONFIG_FILES="$CONFIG_FILES bin/Makefile" ;;
     "bin/osk/Makefile") CONFIG_FILES="$CONFIG_FILES bin/osk/Makefile" ;;
     "bin/home/Makefile") CONFIG_FILES="$CONFIG_FILES bin/home/Makefile" ;;
-    "bin/monitor/Makefile") CONFIG_FILES="$CONFIG_FILES bin/monitor/Makefile" ;;
     "bin/statusbar/Makefile") CONFIG_FILES="$CONFIG_FILES bin/statusbar/Makefile" ;;
-    "bin/widget_gallery/Makefile") CONFIG_FILES="$CONFIG_FILES bin/widget_gallery/Makefile" ;;
     "ilixi-$VERSION.pc") CONFIG_FILES="$CONFIG_FILES ilixi-$VERSION.pc:ilixi.pc.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5 ;;
@@ -20507,7 +20507,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:
    ilixi configuration summary
-   -------------------------
+  -----------------------------
 	Version                  : $VERSION
 	Install prefix           : $prefix
 	Build shared libs        : $enable_shared
@@ -20516,26 +20516,24 @@ fi
 	CFLAGS                   : $CFLAGS
 	LDFLAGS                  : $LDFLAGS
 	Logging enabled          : $ILIXI_LOGGER_ENABLED
-	Log debug message        : $ILIXI_LOG_DEBUG_ENABLED
+	Debug messages enabled   : $ILIXI_LOG_DEBUG_ENABLED
 
-    Copyright 2010, 2011 Tarik Sekmen.
 
-    All Rights Reserved.
 
-    Written by Tarik Sekmen <tarik@ilixi.org>.
+	Copyright 2010, 2011 Tarik Sekmen <tarik@ilixi.org>.
 
-    ilixi is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	ilixi is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    ilixi is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	ilixi is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU Lesser General Public License
+	along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
 
     http://www.ilixi.org
 
@@ -20544,7 +20542,7 @@ Type \`make install' to install ilixi.
 " >&5
 $as_echo "
    ilixi configuration summary
-   -------------------------
+  -----------------------------
 	Version                  : $VERSION
 	Install prefix           : $prefix
 	Build shared libs        : $enable_shared
@@ -20553,26 +20551,24 @@ $as_echo "
 	CFLAGS                   : $CFLAGS
 	LDFLAGS                  : $LDFLAGS
 	Logging enabled          : $ILIXI_LOGGER_ENABLED
-	Log debug message        : $ILIXI_LOG_DEBUG_ENABLED
+	Debug messages enabled   : $ILIXI_LOG_DEBUG_ENABLED
 
-    Copyright 2010, 2011 Tarik Sekmen.
 
-    All Rights Reserved.
 
-    Written by Tarik Sekmen <tarik@ilixi.org>.
+	Copyright 2010, 2011 Tarik Sekmen <tarik@ilixi.org>.
 
-    ilixi is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	ilixi is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    ilixi is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	ilixi is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU Lesser General Public License
+	along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
 
     http://www.ilixi.org
 

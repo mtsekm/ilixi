@@ -16,7 +16,8 @@ libilixi_types_la_SOURCES 		= 	Brush.cpp \
 									RadialGradient.cpp \
 									RadioGroup.cpp \
 									Rectangle.cpp \
-									Size.cpp
+									Size.cpp \
+									Video.cpp
 
 ilixi_includedir 				= 	$(includedir)/$(PACKAGE)-$(VERSION)/types
 nobase_ilixi_include_HEADERS 	= 	Brush.h \
@@ -34,4 +35,5 @@ nobase_ilixi_include_HEADERS 	= 	Brush.h \
 									RadialGradient.h \
 									RadioGroup.h \
 									Rectangle.h \
-									Size.h
+									Size.h \
+									Video.h

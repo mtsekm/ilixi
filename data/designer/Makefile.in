@@ -236,15 +236,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 designerdatadir = $(ILIXI_DATADIR)/designer
-designerdata_DATA = arrow.png \
-				checkFull.png \
-				checkPartial.png \
-				close.png \
-				maximise.png \
-				minimise.png \
-				plus.png \
-				radioFull.png
-
+designerdata_DATA = 
 EXTRA_DIST = $(designerdata_DATA)
 all: all-am
 

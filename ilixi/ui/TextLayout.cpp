@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/TextLayout.h"
@@ -40,8 +42,8 @@ TextLayout::TextLayout(std::string text, Widget* parent) :
         }
     }
 
-  sigGeometryUpdated.connect(sigc::mem_fun(this,
-      &TextLayout::updateTextLayoutGeometry));
+  sigGeometryUpdated.connect(
+      sigc::mem_fun(this, &TextLayout::updateTextLayoutGeometry));
 }
 
 TextLayout::~TextLayout()
@@ -143,21 +145,6 @@ TextLayout::textExtents() const
   if (_text.empty())
     return Size();
   return FontMetrics::getSize(font(), _text, singleParagraph());
-
-  //  Size s = FontMetrics::getSize(font(), _text, singleParagraph());
-  //  if (gravity() == PANGO_GRAVITY_EAST)
-  //    s.transpose();
-  //  return s;
-
-  /*
-   int w = 0;
-   int h = 0;
-   pango_context_set_font_description(_context, font()->fontDescription());
-   pango_layout_set_font_description(_layout, font()->fontDescription());
-   pango_layout_set_text(_layout, _text.c_str(), _text.length());
-   pango_layout_get_pixel_size(_layout, &w, &h);
-   return Size(w, h);
-   */
 }
 
 int

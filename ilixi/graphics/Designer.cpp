@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "graphics/Designer.h"
@@ -188,188 +190,189 @@ Designer::parsePalette(xmlDoc* node)
                       else if (!xmlStrcmp(target,
                           (const xmlChar *) "_focusBottom"))
                         _palette._focusBottom = color;
-else                        ILOG_ERROR(
+                      else
+                        ILOG_ERROR(
                             "Color target=\"%s\" is not supported for %s!",
                             target, groupName);
-                      }
-                    else if (!xmlStrcmp(groupName, (const xmlChar *) "default"))
-                      {
-                        if (!xmlStrcmp(target, (const xmlChar *) "_base"))
+                    }
+                  else if (!xmlStrcmp(groupName, (const xmlChar *) "default"))
+                    {
+                      if (!xmlStrcmp(target, (const xmlChar *) "_base"))
                         _palette._default._base = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
                         _palette._default._baseText = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
                         _palette._default._baseAlt = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_baseAltText"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_baseAltText"))
                         _palette._default._baseAltText = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundTop"))
                         _palette._default._backgroundTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundMid"))
                         _palette._default._backgroundMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundBottom"))
                         _palette._default._backgroundBottom = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderTop"))
                         _palette._default._borderTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderMid"))
                         _palette._default._borderMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderBottom"))
                         _palette._default._borderBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
                         _palette._default._fillTop = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
                         _palette._default._fillMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_fillBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_fillBottom"))
                         _palette._default._fillBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
                         _palette._default._text = color;
-                        else
+                      else
                         ILOG_ERROR("Color target=\"%s\" is not supported for %s!", target, groupName);
-                      }
+                    }
 
-                    else if (!xmlStrcmp(groupName, (const xmlChar *) "exposed"))
-                      {
-                        if (!xmlStrcmp(target, (const xmlChar *) "_base"))
+                  else if (!xmlStrcmp(groupName, (const xmlChar *) "exposed"))
+                    {
+                      if (!xmlStrcmp(target, (const xmlChar *) "_base"))
                         _palette._exposed._base = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
                         _palette._exposed._baseText = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
                         _palette._exposed._baseAlt = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_baseAltText"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_baseAltText"))
                         _palette._exposed._baseAltText = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundTop"))
                         _palette._exposed._backgroundTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundMid"))
                         _palette._exposed._backgroundMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundBottom"))
                         _palette._exposed._backgroundBottom = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderTop"))
                         _palette._exposed._borderTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderMid"))
                         _palette._exposed._borderMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderBottom"))
                         _palette._exposed._borderBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
                         _palette._exposed._fillTop = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
                         _palette._exposed._fillMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_fillBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_fillBottom"))
                         _palette._exposed._fillBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
                         _palette._exposed._text = color;
-                        else
+                      else
                         ILOG_ERROR("Color target=\"%s\" is not supported for %s!", target, groupName);
-                      }
-                    else if (!xmlStrcmp(groupName, (const xmlChar *) "pressed"))
-                      {
-                        if (!xmlStrcmp(target, (const xmlChar *) "_base"))
+                    }
+                  else if (!xmlStrcmp(groupName, (const xmlChar *) "pressed"))
+                    {
+                      if (!xmlStrcmp(target, (const xmlChar *) "_base"))
                         _palette._pressed._base = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
                         _palette._pressed._baseText = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
                         _palette._pressed._baseAlt = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_baseAltText"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_baseAltText"))
                         _palette._pressed._baseAltText = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundTop"))
                         _palette._pressed._backgroundTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundMid"))
                         _palette._pressed._backgroundMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundBottom"))
                         _palette._pressed._backgroundBottom = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderTop"))
                         _palette._pressed._borderTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderMid"))
                         _palette._pressed._borderMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderBottom"))
                         _palette._pressed._borderBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
                         _palette._pressed._fillTop = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
                         _palette._pressed._fillMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_fillBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_fillBottom"))
                         _palette._pressed._fillBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
                         _palette._pressed._text = color;
-                        else
+                      else
                         ILOG_ERROR("Color target=\"%s\" is not supported for %s!", target, groupName);
-                      }
-                    else if (!xmlStrcmp(groupName, (const xmlChar *) "disabled"))
-                      {
-                        if (!xmlStrcmp(target, (const xmlChar *) "_base"))
+                    }
+                  else if (!xmlStrcmp(groupName, (const xmlChar *) "disabled"))
+                    {
+                      if (!xmlStrcmp(target, (const xmlChar *) "_base"))
                         _palette._disabled._base = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseText"))
                         _palette._disabled._baseText = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_baseAlt"))
                         _palette._disabled._baseAlt = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_baseAltText"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_baseAltText"))
                         _palette._disabled._baseAltText = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundTop"))
                         _palette._disabled._backgroundTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundMid"))
                         _palette._disabled._backgroundMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_backgroundBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_backgroundBottom"))
                         _palette._disabled._backgroundBottom = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderTop"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderTop"))
                         _palette._disabled._borderTop = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderMid"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderMid"))
                         _palette._disabled._borderMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_borderBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_borderBottom"))
                         _palette._disabled._borderBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillTop"))
                         _palette._disabled._fillTop = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_fillMid"))
                         _palette._disabled._fillMid = color;
-                        else if (!xmlStrcmp(target,
-                                (const xmlChar *) "_fillBottom"))
+                      else if (!xmlStrcmp(target,
+                          (const xmlChar *) "_fillBottom"))
                         _palette._disabled._fillBottom = color;
-                        else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
+                      else if (!xmlStrcmp(target, (const xmlChar *) "_text"))
                         _palette._disabled._text = color;
-                        else
+                      else
                         ILOG_ERROR("Color target=\"%s\" is not supported for %s!", target, groupName);
-                      }
-                    xmlFree(redAttr);
-                    xmlFree(greenAttr);
-                    xmlFree(blueAttr);
-                    xmlFree(alphaAttr);
-                  }
-                xmlFree(target);
-                colorNode = colorNode->next;
-              }
-            xmlFree(groupName);
-          }
-        item = item->next;
-      }
-  }
+                    }
+                  xmlFree(redAttr);
+                  xmlFree(greenAttr);
+                  xmlFree(blueAttr);
+                  xmlFree(alphaAttr);
+                }
+              xmlFree(target);
+              colorNode = colorNode->next;
+            }
+          xmlFree(groupName);
+        }
+      item = item->next;
+    }
+}
 
 void
 Designer::parseFonts(xmlDoc* node)
@@ -447,17 +450,18 @@ Designer::parseFonts(xmlDoc* node)
                   _inputFont->setSize(atoi((char*) sizeAttr));
                   _inputFont->setWeight(weight);
                 }
-else                ILOG_ERROR("Font name=\"%s\" is not supported!", nameAttr);
-              }
+              else
+                ILOG_ERROR("Font name=\"%s\" is not supported!", nameAttr);
+            }
 
-            xmlFree(nameAttr);
-            xmlFree(familyAttr);
-            xmlFree(sizeAttr);
-            xmlFree(weightAttr);
-          }
-        item = item->next;
-      }
-  }
+          xmlFree(nameAttr);
+          xmlFree(familyAttr);
+          xmlFree(sizeAttr);
+          xmlFree(weightAttr);
+        }
+      item = item->next;
+    }
+}
 
 void
 Designer::parseHints(xmlDoc* node)
@@ -545,8 +549,8 @@ Designer::parseHints(xmlDoc* node)
               xmlChar *offset = xmlGetProp(item, (const xmlChar *) "offset");
 
               if (width && height)
-                _radiobuttonSize = Size(atoi((char*) width), atoi(
-                    (char*) height));
+                _radiobuttonSize = Size(atoi((char*) width),
+                    atoi((char*) height));
               if (offset)
                 _radiobuttonOffset = atoi((char*) offset);
 
@@ -561,8 +565,8 @@ Designer::parseHints(xmlDoc* node)
               xmlChar *radius = xmlGetProp(item, (const xmlChar *) "radius");
 
               if (width && height)
-                _progressbarSize = Size(atoi((char*) width), atoi(
-                    (char*) height));
+                _progressbarSize = Size(atoi((char*) width),
+                    atoi((char*) height));
               if (radius)
                 _progressbarRadius = atoi((char*) radius);
 
@@ -648,12 +652,13 @@ Designer::parseHints(xmlDoc* node)
 
               xmlFree(sh);
             }
-else            ILOG_ERROR("Hint name=\"%s\" is not supported!", name);
-            xmlFree(name);
-          }
-        item = item->next;
-      }
-  }
+          else
+            ILOG_ERROR("Hint name=\"%s\" is not supported!", name);
+          xmlFree(name);
+        }
+      item = item->next;
+    }
+}
 
 void
 Designer::parseImages(std::string pathFS, xmlDoc* node)
@@ -714,14 +719,15 @@ Designer::parseImages(std::string pathFS, xmlDoc* node)
                 _plusSign = new Image(path, 48, 48);
               else if (!strcmp(name, "Minus"))
                 _minusSign = new Image(path, 48, 48);
-else                ILOG_ERROR("Image name=\"%s\" is not supported!", name);
-              }
-            xmlFree(nameAttr);
-            xmlFree(pathAttr);
-          }
-        item = item->next;
-      }
-  }
+              else
+                ILOG_ERROR("Image name=\"%s\" is not supported!", name);
+            }
+          xmlFree(nameAttr);
+          xmlFree(pathAttr);
+        }
+      item = item->next;
+    }
+}
 
 void
 Designer::drawLabel(Painter* painter, Label* label)
@@ -743,12 +749,12 @@ Designer::drawIcon(Painter* painter, Icon* icon)
       painter->getPen()->setColor(_palette._default._borderBottom);
       painter->drawRectangle(0, 0, icon->width(), icon->height(),
           Painter::StrokePath);
-      painter->drawImage(icon->image(), Rectangle(1, 1, icon->width() - 1,
-          icon->height() - 1));
+      painter->drawImage(icon->image(),
+          Rectangle(1, 1, icon->width() - 1, icon->height() - 1));
     }
   else
-    painter->drawImage(icon->image(), Rectangle(0, 0, icon->width(),
-        icon->height()));
+    painter->drawImage(icon->image(),
+        Rectangle(0, 0, icon->width(), icon->height()));
 }
 
 void
@@ -783,8 +789,8 @@ Designer::drawPushButton(Painter* painter, PushButton* button)
     {
       brush->setColor(_palette.getGroup(state)._text);
       painter->drawLayout(button->layout(), button->font(),
-          button->layoutPosition().x(), button->layoutPosition().y()
-              + button->pressed());
+          button->layoutPosition().x(),
+          button->layoutPosition().y() + button->pressed());
     }
 }
 
@@ -963,8 +969,8 @@ Designer::drawProgressBar(Painter* painter, ProgressBar* bar)
           if (orientation == Horizontal)
             {
               fillWidth = (bar->value() * frameWidth) / bar->range();
-              fillGradient.setPatternCoordinates(0, frameY, 0, frameY
-                  + frameHeight);
+              fillGradient.setPatternCoordinates(0, frameY, 0,
+                  frameY + frameHeight);
             }
           else
             {
@@ -992,8 +998,8 @@ Designer::drawProgressBar(Painter* painter, ProgressBar* bar)
           brush->setColor(_palette.getGroup(state)._text);
           sprintf(percent, "%% %d", bar->percentage());
           painter->setLayoutAlignment(PANGO_ALIGN_CENTER);
-          painter->drawText(percent, frameX, frameY + 1, frameWidth,
-              frameHeight);
+          painter->drawText(percent, frameX, frameY, frameWidth,
+              frameHeight, AlignVCenter);
         }
     }
 }
@@ -1058,8 +1064,8 @@ Designer::drawSlider(Painter* painter, Slider* slider)
           if (orientation == Horizontal)
             {
               fillWidth = (slider->value() * frameWidth) / slider->range();
-              fillGradient.setPatternCoordinates(0, frameY, 0, frameY
-                  + frameHeight);
+              fillGradient.setPatternCoordinates(0, frameY, 0,
+                  frameY + frameHeight);
             }
           else
             {
@@ -1220,8 +1226,8 @@ Designer::drawGroupBox(Painter* painter, GroupBox* box)
   drawFrame(painter, box, 0, y, box->width(), box->height() - y);
 
   int x = (box->width() - s.width()) / 2;
-  drawFrame(painter, box, x - 10, 0, s.width() + 20, s.height() + 2
-      * _borderWidth, true);
+  drawFrame(painter, box, x - 10, 0, s.width() + 20,
+      s.height() + 2 * _borderWidth, true);
   painter->setFont(_titleFont);
   painter->getBrush()->setColor(_palette.getGroup(box->state())._text);
   painter->drawText(box->title(), x, _borderWidth);
@@ -1309,7 +1315,8 @@ Designer::drawDialog(Painter* painter, Dialog* dialog)
 }
 
 void
-Designer::drawLineEdit(Painter* painter, LineEdit* input, const Rectangle& selection)
+Designer::drawLineEdit(Painter* painter, LineEdit* input,
+    const Rectangle& selection)
 {
 }
 

@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Palette.h"
@@ -46,9 +48,9 @@ Palette::getGroup(WidgetState state)
 
 ColorGroup::ColorGroup() :
   _base(1, 1, 1), _baseAlt(0.9, 0.9, 0.9), _backgroundTop(0.43, 0.43, 0.43),
-      _backgroundMid(0, 0, 0), _backgroundBottom(0.28, 0.28, 0.28), _borderTop(
-          0.3, 0.3, 0.3), _borderMid(0, 0, 0), _borderBottom(0, 0, 0), _text(1,
-          1, 1)
+      _backgroundMid(0, 0, 0), _backgroundBottom(0.28, 0.28, 0.28),
+      _borderTop(0.3, 0.3, 0.3), _borderMid(0, 0, 0), _borderBottom(0, 0, 0),
+      _text(1, 1, 1)
 {
 }
 

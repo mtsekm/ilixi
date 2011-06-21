@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/ComboBox.h"
@@ -24,7 +26,9 @@
 #include "ui/Dialog.h"
 #include "ui/VBoxLayout.h"
 #include "ui/RadioButton.h"
+#include "ui/ScrollArea.h"
 #include <sigc++/bind.h>
+#include <algorithm>
 #include "core/Logger.h"
 
 using namespace ilixi;
@@ -34,8 +38,14 @@ ComboBox::ComboBox(const std::string& title, Widget* parent) :
 {
   setInputMethod(KeyAndPointerInput);
   setConstraints(MinimumConstraint, FixedConstraint);
+
   _dialog = new Dialog(title, Dialog::CancelButtonOption);
   _dialog->setLayout(new VBoxLayout());
+
+  _scrollArea = new ScrollArea();
+  _scrollArea->setLayout(new VBoxLayout());
+  _dialog->addWidget(_scrollArea);
+
   _dialog->sigFinished.connect(sigc::mem_fun(this, &ComboBox::updateSelected));
 }
 
@@ -61,9 +71,9 @@ ComboBox::preferredSize() const
 {
   Size s = textExtents();
   return Size(
-      s.width() + 2 * std::max(designer()->hint(BorderWidth), designer()->hint(
-          ComboBoxRadius)) + designer()->hint(ComboBoxButtonWidth), s.height()
-          + 2 * designer()->hint(BorderWidth));
+      s.width() + 2 * std::max(designer()->hint(BorderWidth),
+          designer()->hint(ComboBoxRadius)) + designer()->hint(
+          ComboBoxButtonWidth), s.height() + 2 * designer()->hint(BorderWidth));
 }
 
 void
@@ -99,15 +109,10 @@ ComboBox::addItem(const std::string& item)
   setText(item);
   RadioButton* rb = new RadioButton(item);
   _items.push_back(rb);
-  _dialog->addWidget(rb);
+  _scrollArea->addWidget(rb);
   rb->toggleState();
-  rb->sigClicked.connect(sigc::bind<int>(
-      sigc::mem_fun(_dialog, &Dialog::finish), _selectedIndex + 1));
-}
-
-void
-ComboBox::removeItem(const std::string& item)
-{
+  rb->sigClicked.connect(
+      sigc::bind<int>(sigc::mem_fun(_dialog, &Dialog::finish), _selectedIndex));
 }
 
 void
@@ -117,7 +122,7 @@ ComboBox::setItems(const std::vector<std::string>& items)
   for (unsigned int i = 0; i < items.size(); ++i)
     {
       _items.push_back(new RadioButton(items[i]));
-      _dialog->addWidget(_items.back());
+      _scrollArea->addWidget(_items.back());
     }
 }
 
@@ -172,18 +177,18 @@ ComboBox::compose(const Rectangle& rect)
 void
 ComboBox::updateSelected(int index)
 {
-  if (index != _selectedIndex && --index > -1)
+  if (index != _selectedIndex)
     {
       _selectedIndex = index;
-      setText(_items.at(_selectedIndex)->text());
+      setText(item(_selectedIndex));
     }
 }
 
 void
 ComboBox::updateTextLayoutGeometry()
 {
-  int border = std::max(designer()->hint(BorderWidth), designer()->hint(
-      ComboBoxRadius));
+  int border = std::max(designer()->hint(BorderWidth),
+      designer()->hint(ComboBoxRadius));
   int x = border;
   int y = designer()->hint(BorderWidth);
 

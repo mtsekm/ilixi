@@ -1,39 +1,37 @@
 What is ilixi?
 ==============
-Ilixi is an open-source lightweight GUI framework and it is 
-designed with linux based embedded devices in mind. Ilixi 
+ilixi is an open-source lightweight GUI framework and it is 
+designed with Linux based embedded devices in mind. ilixi 
 uses DirectFB at its core in order to render all graphics 
-content to a linux framebuffer device. This eliminates the 
-need for the X server. Although DirectFB provides basic 
+content to a Linux framebuffer device. This eliminates the 
+need for X server. Although DirectFB provides basic 
 raster graphics functionality, Cairo and Pango are used for 
-rendering 2D graphics and text respectively.
-
-More information about ilixi can be found at:
-		
-	http://www.ilixi.org
+rendering 2D graphics and laying out text respectively.
 
 Build instructions
 ==================
-This section briefly describes the steps for building ilixi. 
-DirectFB should be compiled with multi application core support. 
+This section briefly describes the steps for building ilixi only. 
 For information on building dependencies please refer to ilixi 
 web site (http://www.ilixi.org).
+
+Note that DirectFB should be compiled with multi application core 
+support. 
 
 Once all dependencies are successfully installed on your system 
 you could build and install ilixi as follows:
 
 	./configure
 	make
-	sudo make install
+	make install
 
-Ilixi uses Doxygen for generating its documentation from source files. 
-If your system supports it, you could generate an up-to-date html 
-documentation as follows:
+Ilixi uses Doxygen for documentation. If your system has required software, you could generate an up-to-date html documentation as follows:
 
 	./configure
 	make doxygen-doc
 
 License
 =======
-Ilixi is free software and is available to be redistributed and/or 
-modified under the terms of the GNU General Public License (GPL) version 3.
+ilixi is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.

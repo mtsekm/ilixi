@@ -3,7 +3,7 @@
 <style>
 	<palette>
 		<group name="application">
-			<Color target="_baseTop" red="0" green="0" blue="0" alpha="128" />
+			<Color target="_baseTop" red="20" green="20" blue="20" alpha="128" />
 			<Color target="_baseBottom" red="0" green="0" blue="0" alpha="255" />
 			<Color target="_text" red="255" green="255" blue="255" alpha="255" />
 			<Color target="_textDisabled" red="116" green="116" blue="116" alpha="255" />
@@ -86,7 +86,7 @@
 		<font name="Default" family="sans" size="9" />
 		<font name="Button" family="sans" size="9" />
 		<font name="Title" family="sans" size="11" weight="bold" />
-		<font name="Input" family="sans" size="13" />
+		<font name="Input" family="sans" size="12" />
 	</fonts>
 	
 	<hints>	

@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Label.h"
@@ -27,8 +29,8 @@
 using namespace ilixi;
 
 Label::Label(std::string text, Widget* parent) :
-  BorderBase(parent), TextLayout(text, parent), _margin(0), _vertical(
-      AlignVCenter)
+  BorderBase(parent), TextLayout(text, parent), _margin(0),
+      _vertical(AlignVCenter)
 {
   setConstraints(NoConstraint, MinimumConstraint);
 }
@@ -48,8 +50,8 @@ Size
 Label::preferredSize() const
 {
   Size s = textExtents();
-  return Size(s.width() + 2 * (borderHorizontalOffset() + _margin), s.height()
-      + 2 * (borderWidth() + _margin));
+  return Size(s.width() + 2 * (borderHorizontalOffset() + _margin),
+      s.height() + 2 * (borderWidth() + _margin));
 }
 
 int
@@ -91,20 +93,22 @@ Label::updateTextLayoutGeometry()
 {
   if (_vertical == AlignVTop)
     setTextGeometry(_margin + borderHorizontalOffset(),
-        _margin + borderWidth(), width() - 2 * borderHorizontalOffset() - 2
-            * _margin, height() - 2 * borderWidth() - 2 * _margin);
+        _margin + borderWidth(),
+        width() - 2 * borderHorizontalOffset() - 2 * _margin,
+        height() - 2 * borderWidth() - 2 * _margin);
   else
     {
-      int h = textHeightForWidth(width() - 2 * (borderHorizontalOffset()
-          + _margin));
+      int h = textHeightForWidth(
+          width() - 2 * (borderHorizontalOffset() + _margin));
       int y = 0;
       if (_vertical == AlignVCenter)
         y = (height() - h) / 2;
       else
         y = height() - h;
 
-      setTextGeometry(_margin + borderHorizontalOffset(), _margin
-          + borderWidth() + y, width() - 2 * (borderHorizontalOffset()
-          + _margin), height() - 2 * (borderWidth() + _margin));
+      setTextGeometry(_margin + borderHorizontalOffset(),
+          _margin + borderWidth() + y,
+          width() - 2 * (borderHorizontalOffset() + _margin),
+          height() - 2 * (borderWidth() + _margin));
     }
 }

@@ -44,9 +44,9 @@ DIST_COMMON = README $(am__configure_deps) $(dist_noinst_SCRIPTS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/ilixi.pc.in \
 	$(top_srcdir)/configure $(top_srcdir)/doc/aminclude.am AUTHORS \
-	COPYING ChangeLog INSTALL NEWS TODO config/config.guess \
-	config/config.sub config/depcomp config/install-sh \
-	config/ltmain.sh config/missing
+	COPYING COPYING.LESSER ChangeLog INSTALL NEWS TODO \
+	config/config.guess config/config.sub config/depcomp \
+	config/install-sh config/ltmain.sh config/missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/m4/libtool.m4 \
@@ -332,6 +332,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 SUBDIRS = $(PACKAGE) data bin
 DIST_SUBDIRS = $(PACKAGE) data bin doc
 EXTRA_DIST = COPYING \
+COPYING.LESSER \
 				README \
 				TODO \
 				config/m4

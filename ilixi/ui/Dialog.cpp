@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Dialog.h"
@@ -29,15 +31,16 @@
 using namespace ilixi;
 
 Dialog::Dialog(std::string title, ButtonOption option, Widget* parent) :
-  Window(), Frame(), _buttonLayout(NULL), _result(-1)
+  //Window(), Frame(parent),
+      WindowWidget(), _buttonLayout(NULL), _result(-1)
 {
   _surfaceDesc = WindowDescription;
   setMargin(5);
   setTitle(title);
   setUIManager(_windowUIManager);
   setButtonLayoutOption(option);
-  sigGeometryUpdated.connect(sigc::mem_fun(this,
-      &Dialog::updateButtonLayoutGeometry));
+  sigGeometryUpdated.connect(
+      sigc::mem_fun(this, &Dialog::updateButtonLayoutGeometry));
 }
 
 Dialog::~Dialog()
@@ -65,9 +68,10 @@ Dialog::preferredSize() const
 
   int hButtonLayout = _buttonLayoutSize.height() + 2 * spacing();
 
-  return Size(w + 2 * borderHorizontalOffset(), layoutSize.height()
-      + _canvasTopLeft.y() + _margin.vSum() + _titleSize.height()
-      + hButtonLayout + 2 * borderWidth());
+  return Size(
+      w + 2 * borderHorizontalOffset(),
+      layoutSize.height() + _canvasTopLeft.y() + _margin.vSum()
+          + _titleSize.height() + hButtonLayout + 2 * borderWidth());
 }
 
 void
@@ -111,14 +115,18 @@ Dialog::execute()
   Size pref = preferredSize();
   int w = pref.width();
   int h = pref.height();
+  if (w > (_layerConfig.width - 15))
+    w = _layerConfig.width - 15;
+
+  if (h > (_layerConfig.height - 15))
+    h = _layerConfig.height - 15;
+
   int x = (_layerConfig.width - w) / 2.0;
   int y = (_layerConfig.height - h) / 2.0;
 
   setSize(w, h);
 
   initDFBWindow(x, y, width(), height(), true);
-  //  if (_windowSurface)
-  //    cfc();
 
   setUIManager(_windowUIManager);
   paint(Rectangle(0, 0, w, h));
@@ -194,8 +202,8 @@ Dialog::setButtonLayoutOption(ButtonOption option)
         {
           button = new ToolButton("Cancel");
           _buttonLayout->addWidget(button);
-          button->sigClicked.connect(sigc::bind<int>(sigc::mem_fun(this,
-              &Dialog::finish), -1));
+          button->sigClicked.connect(
+              sigc::bind<int>(sigc::mem_fun(this, &Dialog::finish), -1));
         }
     }
 
@@ -222,28 +230,6 @@ Dialog::setTitle(const std::string& title)
 {
   _title = title;
   _titleSize = FontMetrics::getSize(designer()->defaultFont(TitleFont), _title);
-}
-
-void
-Dialog::paint(const Rectangle& rect, bool forceRepaint)
-{
-  if (visible())
-    {
-      updateSurface();
-      Rectangle intersect = getIntersectionForPaint(rect, forceRepaint);
-      if (intersect.isValid())
-        {
-          compose(intersect);
-          paintChildren(intersect);
-          flip(intersect);
-        }
-    }
-}
-
-void
-Dialog::doLayout()
-{
-  update();
 }
 
 int
@@ -278,31 +264,49 @@ Dialog::handleWindowEvent(const DFBWindowEvent& event)
       return true;
     }
 
+  Widget* target = this;
+  if (_windowUIManager->grabbedWidget())
+    target = _windowUIManager->grabbedWidget();
+
   switch (event.type)
     {
+  case DWET_MOTION:
+    return target->consumePointerEvent(
+        PointerEvent(PointerMotion, event.x, event.y));
+
+  case DWET_BUTTONDOWN:
+    return target->consumePointerEvent(
+        PointerEvent(PointerButtonDown, event.x, event.y, 0,
+            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+
+  case DWET_BUTTONUP:
+    return target->consumePointerEvent(
+        PointerEvent(PointerButtonUp, event.x, event.y, 0,
+            (PointerButton) event.button, (PointerButtonMask) event.buttons));
+
+  case DWET_WHEEL:
+    return target->consumePointerEvent(
+        PointerEvent(PointerWheel, event.x, event.y, event.step));
+
   case DWET_KEYUP:
     if (event.key_symbol == DIKS_ESCAPE)
       {
         finish(-1);
         return true;
       }
-    return _uiManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyUpEvent,
-        event.key_symbol, event.modifiers, event.locks));
+    if (_uiManager->focusedWidget())
+      return _uiManager->focusedWidget()->consumeKeyEvent(
+          KeyEvent(KeyUpEvent, event.key_symbol, event.modifiers, event.locks));
+    return false;
+
   case DWET_KEYDOWN:
-    return _uiManager->focusedWidget()->consumeKeyEvent(KeyEvent(KeyDownEvent,
-        event.key_symbol, event.modifiers, event.locks));
-  case DWET_BUTTONDOWN:
-    return consumePointerEvent(PointerEvent(PointerButtonDown, event.x,
-        event.y, 0, (PointerButton) event.button,
-        (PointerButtonMask) event.buttons));
-  case DWET_BUTTONUP:
-    return consumePointerEvent(PointerEvent(PointerButtonUp, event.x, event.y,
-        0, (PointerButton) event.button, (PointerButtonMask) event.buttons));
-  case DWET_WHEEL:
-    return consumePointerEvent(PointerEvent(PointerWheel, event.x, event.y,
-        event.step));
-  case DWET_MOTION:
-    return consumePointerEvent(PointerEvent(PointerMotion, event.x, event.y));
+    if (_windowUIManager->focusedWidget())
+      return _windowUIManager->focusedWidget()->consumeKeyEvent(
+          KeyEvent(KeyDownEvent, event.key_symbol, event.modifiers, event.locks));
+    return false;
+
+  default:
+    return false;
     }
 }
 
@@ -321,8 +325,8 @@ Dialog::updateButtonLayoutGeometry()
   if (_buttonLayout->count() == 0)
     return;
 
-  _buttonLayout->moveTo(borderHorizontalOffset(), height()
-      - (_buttonLayoutSize.height() + spacing() + borderWidth()));
+  _buttonLayout->moveTo(borderHorizontalOffset(),
+      height() - (_buttonLayoutSize.height() + spacing() + borderWidth()));
 
   _buttonLayout->setSize(width() - 2 * borderHorizontalOffset(),
       _buttonLayoutSize.height());

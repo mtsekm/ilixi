@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Widget.h"
@@ -29,11 +31,34 @@ using namespace ilixi;
 
 Designer* Widget::_designer = 0;
 
+//*********************************************************************
+// WidgetThread
+//*********************************************************************
+WidgetThread::WidgetThread(Widget* parent) :
+  Thread(), _parent(parent), _delay(1000)
+{
+}
+
+WidgetThread::~WidgetThread()
+{
+}
+
+int
+WidgetThread::run()
+{
+  usleep(_delay);
+  return 1;
+}
+
+//*********************************************************************
+// Widget
+//*********************************************************************
+
 Widget::Widget(Widget* parent) :
   _state(DefaultState), _surfaceDesc(DefaultDescription),
       _inputMethod(NoInput), _parent(parent), _surface(NULL), _uiManager(NULL),
-      _horizontalResizeConstraint(NoConstraint), _verticalResizeConstraint(
-          NoConstraint)
+      _horizontalResizeConstraint(NoConstraint),
+      _verticalResizeConstraint(NoConstraint)
 {
   sigGeometryUpdated.connect(sigc::mem_fun(this, &Widget::updateFrameGeometry));
 }
@@ -538,12 +563,12 @@ Widget::setPointerTracking(bool pointerTracking)
 }
 
 void
-Widget::paint(const Rectangle& rect, bool forceRepaint)
+Widget::paint(const Rectangle& rect)
 {
   if (visible())
     {
       updateSurface();
-      Rectangle intersect = getIntersectionForPaint(rect, forceRepaint);
+      Rectangle intersect = _frameGeometry.intersected(rect);
       if (intersect.isValid())
         {
           compose(mapToSurface(intersect));
@@ -555,8 +580,26 @@ Widget::paint(const Rectangle& rect, bool forceRepaint)
 void
 Widget::repaint()
 {
-  paint(Rectangle(_frameGeometry.x(), _frameGeometry.y(),
-      _surfaceGeometry.width(), _surfaceGeometry.height()), true);
+  if (_surface && _parent && !(_state & InvisibleState))
+    _parent->repaint(
+        Rectangle(_frameGeometry.x(), _frameGeometry.y(),
+            _surfaceGeometry.width(), _surfaceGeometry.height()));
+}
+
+void
+Widget::repaint(const Rectangle& rect)
+{
+  if (_surface && _parent && !(_state & InvisibleState))
+    {
+      if (_surfaceDesc & HasOwnSurface)
+        {
+          _surface->clear(
+              mapToSurface(rect.x(), rect.y(), rect.width(), rect.height()));
+          _parent->repaint(_frameGeometry.intersected(rect));
+        }
+      else
+        _parent->repaint(rect);
+    }
 }
 
 void
@@ -573,10 +616,8 @@ Widget::update(const Rectangle& rect)
     {
       if (_surfaceDesc & HasOwnSurface)
         {
-          _surface->clear(mapToSurface(rect.x(), rect.y(), rect.width(),
-              rect.height()));
-          paint(rect);
-//          flip(mapToSurface(rect.x(), rect.y(), rect.width(), rect.height()));
+          _surface->clear(
+              mapToSurface(rect.x(), rect.y(), rect.width(), rect.height()));
           _parent->update(_frameGeometry.intersected(rect));
         }
       else
@@ -603,8 +644,8 @@ Rectangle
 Widget::mapToSurface(int x, int y, int width, int height) const
 {
   if (_surfaceDesc & HasOwnSurface)
-    return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()), y
-        - (_surfaceGeometry.y() + _frameGeometry.y()), width, height);
+    return Rectangle(x - (_surfaceGeometry.x() + _frameGeometry.x()),
+        y - (_surfaceGeometry.y() + _frameGeometry.y()), width, height);
   else
     return Rectangle(x - _frameGeometry.x(), y - _frameGeometry.y(), width,
         height);
@@ -643,9 +684,6 @@ Widget::mapFromSurface(const Point& point) const
 void
 Widget::updateSurface()
 {
-  if (_surfaceDesc & SurfaceModified)
-    sigGeometryUpdated();
-
   if (!_surface && (_surfaceDesc & InitialiseSurface))
     {
       delete _surface;
@@ -662,6 +700,9 @@ Widget::updateSurface()
       if (ret)
         _surfaceDesc = (SurfaceDescription) (_surfaceDesc & ~InitialiseSurface);
     }
+
+  if (_surfaceDesc & SurfaceModified)
+    sigGeometryUpdated();
 }
 
 void
@@ -744,19 +785,6 @@ Widget::enterEvent(const PointerEvent& mouseEvent)
 void
 Widget::leaveEvent(const PointerEvent& mouseEvent)
 {
-}
-
-Rectangle
-Widget::getIntersectionForPaint(const Rectangle& rect, bool forceRepaint)
-{
-  if (forceRepaint)
-    return Rectangle(_frameGeometry.x(), _frameGeometry.y(),
-        _surfaceGeometry.width(), _surfaceGeometry.height());
-  else if (_surfaceDesc & HasOwnSurface)
-    return rect;
-  else
-    return _frameGeometry.intersected(rect);
-
 }
 
 bool

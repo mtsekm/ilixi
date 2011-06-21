@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "graphics/TDesigner.h"
@@ -174,11 +176,11 @@ TDesigner::drawToolButton(Painter* painter, ToolButton* button)
         {
           LinearGradient fillGradient;
           if (horizontal)
-            fillGradient.setPatternCoordinates(0, y, 0, y
-                + _buttonCheckedIndicatorWidth);
+            fillGradient.setPatternCoordinates(0, y, 0,
+                y + _buttonCheckedIndicatorWidth);
           else
-            fillGradient.setPatternCoordinates(_borderWidth, 0, _borderWidth
-                + _buttonCheckedIndicatorWidth, 0);
+            fillGradient.setPatternCoordinates(_borderWidth, 0,
+                _borderWidth + _buttonCheckedIndicatorWidth, 0);
           fillGradient.addStop(_palette.getGroup(state)._fillTop, 0);
           fillGradient.addStop(_palette.getGroup(state)._fillMid, 0.5);
           fillGradient.addStop(_palette.getGroup(state)._fillBottom, 1);
@@ -194,8 +196,8 @@ TDesigner::drawToolButton(Painter* painter, ToolButton* button)
             Painter::StrokeAndFill);
       else
         painter->drawRoundRectangle(3, _borderWidth,
-            _buttonCheckedIndicatorWidth, button->height() - 4, _buttonRadius
-                - 2, Painter::StrokeAndFill);
+            _buttonCheckedIndicatorWidth, button->height() - 4,
+            _buttonRadius - 2, Painter::StrokeAndFill);
     }
 
   // Draw button icon and text
@@ -214,8 +216,8 @@ TDesigner::drawToolButton(Painter* painter, ToolButton* button)
       {
         brush->setColor(_palette.getGroup(state)._text);
         painter->drawLayout(button->layout(), button->font(),
-            button->layoutPosition().x(), button->layoutPosition().y()
-                + pressed);
+            button->layoutPosition().x(),
+            button->layoutPosition().y() + pressed);
       }
     break;
 
@@ -230,8 +232,8 @@ TDesigner::drawToolButton(Painter* painter, ToolButton* button)
       {
         brush->setColor(_palette.getGroup(state)._text);
         painter->drawLayout(button->layout(), button->font(),
-            button->layoutPosition().x(), button->layoutPosition().y()
-                + pressed);
+            button->layoutPosition().x(),
+            button->layoutPosition().y() + pressed);
       }
     break;
     }
@@ -257,11 +259,11 @@ TDesigner::drawButtonCheckIndicator(Painter* painter, Button* button,
         {
           LinearGradient fillGradient;
           if (horizontal)
-            fillGradient.setPatternCoordinates(0, y, 0, y
-                + _buttonCheckedIndicatorWidth);
+            fillGradient.setPatternCoordinates(0, y, 0,
+                y + _buttonCheckedIndicatorWidth);
           else
-            fillGradient.setPatternCoordinates(_borderWidth, 0, _borderWidth
-                + _buttonCheckedIndicatorWidth, 0);
+            fillGradient.setPatternCoordinates(_borderWidth, 0,
+                _borderWidth + _buttonCheckedIndicatorWidth, 0);
           fillGradient.addStop(_palette.getGroup(state)._fillTop, 0);
           fillGradient.addStop(_palette.getGroup(state)._fillMid, 0.5);
           fillGradient.addStop(_palette.getGroup(state)._fillBottom, 1);
@@ -277,8 +279,8 @@ TDesigner::drawButtonCheckIndicator(Painter* painter, Button* button,
             Painter::StrokeAndFill);
       else
         painter->drawRoundRectangle(3, _borderWidth,
-            _buttonCheckedIndicatorWidth, button->height() - 4, _buttonRadius
-                - 2, Painter::StrokeAndFill);
+            _buttonCheckedIndicatorWidth, button->height() - 4,
+            _buttonRadius - 2, Painter::StrokeAndFill);
     }
 }
 
@@ -380,8 +382,8 @@ TDesigner::drawComboBox(Painter* painter, ComboBox* combo)
   brush->setColor(_palette.getGroup(state)._baseText);
   painter->drawLayout(combo->layout(), combo->font(), combo->layoutPosition());
 
-  drawImage(painter, _arrowDown, Rectangle(x, 1, combo->height(),
-      combo->height()), !combo->enabled());
+  drawImage(painter, _arrowDown,
+      Rectangle(x, 1, combo->height(), combo->height()), !combo->enabled());
 }
 
 void
@@ -420,8 +422,8 @@ TDesigner::drawRadioButton(Painter* painter, RadioButton* button)
     brush->setColor(_palette._focusTop);
   else
     brush->setColor(_palette.getGroup(state)._borderMid);
-  painter->drawEllipse(x + 4, y + 4, _radiobuttonSize.width() - 8,
-      _radiobuttonSize.height() - 8, Painter::StrokeAndFill);
+  painter->drawEllipse(x + 5, y + 5, _radiobuttonSize.width() - 10,
+      _radiobuttonSize.height() - 10, Painter::StrokeAndFill);
 
   // draw image
   if (button->hasIcon())
@@ -498,8 +500,8 @@ TDesigner::drawProgressBar(Painter* painter, ProgressBar* bar)
           if (orientation == Horizontal)
             {
               fillWidth = (bar->value() * frameWidth) / bar->range();
-              fillGradient.setPatternCoordinates(0, frameY, 0, frameY
-                  + frameHeight);
+              fillGradient.setPatternCoordinates(0, frameY, 0,
+                  frameY + frameHeight);
             }
           else
             {
@@ -527,8 +529,8 @@ TDesigner::drawProgressBar(Painter* painter, ProgressBar* bar)
           brush->setColor(_palette.getGroup(state)._text);
           sprintf(percent, "%% %d", bar->percentage());
           painter->setLayoutAlignment(PANGO_ALIGN_CENTER);
-          painter->drawText(percent, frameX, frameY + 1, frameWidth,
-              frameHeight);
+          painter->drawText(percent, frameX, frameY, frameWidth,
+              frameHeight, AlignVCenter);
         }
     }
 }
@@ -587,14 +589,14 @@ TDesigner::drawSlider(Painter* painter, Slider* slider)
       if (slider->value())
         {
           painter->drawRoundRectangle(frameX + 1, frameY + 1, frameWidth - 2,
-              frameHeight - 2, _progressbarRadius, Painter::ClipPath);
+              frameHeight - 2, _sliderRadius, Painter::ClipPath);
 
           LinearGradient fillGradient;
           if (orientation == Horizontal)
             {
               fillWidth = (slider->value() * frameWidth) / slider->range();
-              fillGradient.setPatternCoordinates(0, frameY, 0, frameY
-                  + frameHeight);
+              fillGradient.setPatternCoordinates(0, frameY, 0,
+                  frameY + frameHeight);
             }
           else
             {
@@ -608,12 +610,24 @@ TDesigner::drawSlider(Painter* painter, Slider* slider)
           brush->setGradient(fillGradient);
 
           if (orientation == Horizontal)
-            painter->drawRectangle(frameX, frameY, fillWidth, frameHeight,
-                Painter::FillPath);
+            {
+              if (slider->inverted())
+                painter->drawRectangle(frameX + frameWidth - fillWidth, frameY,
+                    fillWidth, frameHeight, Painter::FillPath);
+              else
+                painter->drawRectangle(frameX, frameY, fillWidth, frameHeight,
+                    Painter::FillPath);
+            }
           else
-            painter->drawRectangle(frameX, frameY + frameHeight - fillHeight,
-                frameWidth, fillHeight, Painter::FillPath);
-
+            {
+              if (slider->inverted())
+                painter->drawRectangle(frameX, frameY, frameWidth, fillHeight,
+                    Painter::FillPath);
+              else
+                painter->drawRectangle(frameX,
+                    frameY + frameHeight - fillHeight, frameWidth, fillHeight,
+                    Painter::FillPath);
+            }
           painter->resetClip();
         }
 
@@ -709,8 +723,8 @@ TDesigner::drawScrollBar(Painter* painter, ScrollBar* bar)
     pen->setColor(_palette._disabled._borderMid);
   else
     pen->setColor(_palette._default._borderMid);
-  painter->drawRectangle(frameX + 1, frameY + 1, frameWidth - 2, frameHeight
-      - 2, Painter::StrokePath);
+  painter->drawRectangle(frameX + 1, frameY + 1, frameWidth - 2,
+      frameHeight - 2, Painter::StrokePath);
 
   int range = bar->range();
   if (range != 0)
@@ -753,9 +767,10 @@ TDesigner::drawScrollBar(Painter* painter, ScrollBar* bar)
           DFBSurfaceBlittingFlags flags =
               pressed ? (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
                   | DSBLIT_FLIP_HORIZONTAL) : DSBLIT_BLEND_ALPHACHANNEL;
-          painter->drawImage(_grid, indicatorGeometry.x()
-              + (indicatorGeometry.width() - _scrollbarSize.height()) / 2,
-              indicatorGeometry.y(), flags);
+          painter->drawImage(
+              _grid,
+              indicatorGeometry.x() + (indicatorGeometry.width()
+                  - _scrollbarSize.height()) / 2, indicatorGeometry.y(), flags);
         }
       else
         {
@@ -764,7 +779,9 @@ TDesigner::drawScrollBar(Painter* painter, ScrollBar* bar)
                   | DSBLIT_ROTATE90)
                   : (DFBSurfaceBlittingFlags) (DSBLIT_BLEND_ALPHACHANNEL
                       | DSBLIT_ROTATE270);
-          painter->drawImage(_grid, indicatorGeometry.x(),
+          painter->drawImage(
+              _grid,
+              indicatorGeometry.x(),
               indicatorGeometry.y() + (indicatorGeometry.height()
                   - _scrollbarSize.height()) / 2, flags);
         }
@@ -856,8 +873,9 @@ TDesigner::drawDirectionalButton(Painter* painter, DirectionalButton* button)
   painter->drawRoundRectangle(1, 1, button->width() - 2, button->height() - 2,
       _scrollbarRadius, Painter::StrokePath, c);
 
-  drawImage(painter, img, Rectangle(4, 4 + pressed, button->width() - 8,
-      button->height() - 8), state & DisabledState);
+  drawImage(painter, img,
+      Rectangle(4, 4 + pressed, button->width() - 8, button->height() - 8),
+      state & DisabledState);
 }
 
 void
@@ -878,20 +896,21 @@ TDesigner::drawGroupBox(Painter* painter, GroupBox* box)
   painter->getUserCoordinates(x, y, w, h);
 
   cairo_new_sub_path(context);
-  cairo_arc(context, x + w - _frameBorderRadius, y + s.height()
-      + _frameBorderRadius, _frameBorderRadius, -1.570796325, 0); // top-right
+  cairo_arc(context, x + w - _frameBorderRadius,
+      y + s.height() + _frameBorderRadius, _frameBorderRadius, -1.570796325, 0); // top-right
   cairo_arc(context, x + w - _frameBorderRadius, y + h - _frameBorderRadius,
       _frameBorderRadius, 0, 1.570796325); // bottom-right
   cairo_arc(context, x + _frameBorderRadius, y + h - _frameBorderRadius,
       _frameBorderRadius, 1.570796325, 3.14159265); // bottom-left
   cairo_arc(context, x + _frameBorderRadius, y + _frameBorderRadius,
       _frameBorderRadius, 3.14159265, 4.712388975); // top-left
-  cairo_arc(context, x + s.width() + 2 * box->borderHorizontalOffset()
-      - _frameBorderRadius, y + _frameBorderRadius, _frameBorderRadius,
-      -1.570796325, 0); // top-right (title)
-  cairo_arc_negative(context, x + s.width() + 2 * box->borderHorizontalOffset()
-      + _frameBorderRadius, y + s.height() - _frameBorderRadius,
-      _frameBorderRadius, 3.14159265, 1.570796325); // bottom-right (title)
+  cairo_arc(context,
+      x + s.width() + 2 * box->borderHorizontalOffset() - _frameBorderRadius,
+      y + _frameBorderRadius, _frameBorderRadius, -1.570796325, 0); // top-right (title)
+  cairo_arc_negative(context,
+      x + s.width() + 2 * box->borderHorizontalOffset() + _frameBorderRadius,
+      y + s.height() - _frameBorderRadius, _frameBorderRadius, 3.14159265,
+      1.570796325); // bottom-right (title)
   cairo_close_path(context);
 
   if (box->backgroundFilled())
@@ -905,19 +924,23 @@ TDesigner::drawGroupBox(Painter* painter, GroupBox* box)
   h -= 2;
   painter->getPen()->setColor(_palette._default._borderMid);
   cairo_new_sub_path(context);
-  cairo_arc(context, x + w - _frameBorderRadius, y + s.height()
-      + _frameBorderRadius, _frameBorderRadius, -1.570796325, 0); // top-right
+  cairo_arc(context, x + w - _frameBorderRadius,
+      y + s.height() + _frameBorderRadius, _frameBorderRadius, -1.570796325, 0); // top-right
   cairo_arc(context, x + w - _frameBorderRadius, y + h - _frameBorderRadius,
       _frameBorderRadius, 0, 1.570796325); // bottom-right
   cairo_arc(context, x + _frameBorderRadius, y + h - _frameBorderRadius,
       _frameBorderRadius, 1.570796325, 3.14159265); // bottom-left
   cairo_arc(context, x + _frameBorderRadius, y + _frameBorderRadius,
       _frameBorderRadius, 3.14159265, 4.712388975); // top-left
-  cairo_arc(context, x + s.width() + 2 * box->borderHorizontalOffset() - 2
-      - _frameBorderRadius, y + _frameBorderRadius, _frameBorderRadius,
+  cairo_arc(
+      context,
+      x + s.width() + 2 * box->borderHorizontalOffset() - 2
+          - _frameBorderRadius, y + _frameBorderRadius, _frameBorderRadius,
       -1.570796325, 0); // top-right (title)
-  cairo_arc_negative(context, x + s.width() + 2 * box->borderHorizontalOffset()
-      - 2 + _frameBorderRadius, y + s.height() - _frameBorderRadius,
+  cairo_arc_negative(
+      context,
+      x + s.width() + 2 * box->borderHorizontalOffset() - 2
+          + _frameBorderRadius, y + s.height() - _frameBorderRadius,
       _frameBorderRadius, 3.14159265, 1.570796325); // bottom-right (title)
   cairo_close_path(context);
   painter->drawCurrentPath(Painter::StrokePath);
@@ -1099,8 +1122,8 @@ TDesigner::drawDialog(Painter* painter, Dialog* dialog)
   painter->setFont(_titleFont);
   painter->setEllipsizeMode(PANGO_ELLIPSIZE_END);
   painter->setLayoutAlignment(PANGO_ALIGN_CENTER);
-  painter->drawText(dialog->title(), _frameBorderRadius, 1, dialog->width() - 2
-      * _frameBorderRadius, titleHeight);
+  painter->drawText(dialog->title(), _frameBorderRadius, 1,
+      dialog->width() - 2 * _frameBorderRadius, titleHeight);
 }
 
 void

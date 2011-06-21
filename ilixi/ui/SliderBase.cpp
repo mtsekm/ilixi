@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/SliderBase.h"
@@ -186,7 +188,7 @@ SliderBase::setPageStep(int pageStep)
 }
 
 void
-SliderBase::setValue(int value)
+SliderBase::setValue(int value, bool signal)
 {
   if (value != _value)
     {
@@ -198,8 +200,8 @@ SliderBase::setValue(int value)
         _value = value;
 
       updateIndicatorPosition();
-      //      LOG_DEBUG("Value: %d", _value);
-      sigValueChanged(_value);
+      if (signal)
+        sigValueChanged(_value);
       update();
     }
 }
@@ -220,20 +222,31 @@ void
 SliderBase::updateIndicatorPosition()
 {
   if (_orientation == Horizontal)
-    _indicator.moveTo(_indicatorRegion.x() + _sRect.width() * _value / _range,
-        _indicatorRegion.y());
-  else if (_inverted)
-    _indicator.moveTo(_indicatorRegion.x(), _indicatorRegion.y()
-        + _sRect.height() * _value / _range);
+    {
+      if (_inverted)
+        _indicator.moveTo(
+            (_indicatorRegion.x() + _sRect.width() * (_range - _value) / _range),
+            _indicatorRegion.y());
+      else
+        _indicator.moveTo(
+            _indicatorRegion.x() + _sRect.width() * _value / _range,
+            _indicatorRegion.y());
+    }
   else
-    _indicator.moveTo(_indicatorRegion.x(), _indicatorRegion.y()
-        + _sRect.height() * (_range - _value) / _range);
+    {
+      if (_inverted)
+        _indicator.moveTo(_indicatorRegion.x(),
+            _indicatorRegion.y() + _sRect.height() * _value / _range);
+      else
+        _indicator.moveTo(_indicatorRegion.x(),
+            _indicatorRegion.y() + _sRect.height() * (_range - _value) / _range);
+    }
 }
 
 void
-SliderBase::keyUpEvent(const KeyEvent& keyEvent)
+SliderBase::keyUpEvent(const KeyEvent& event)
 {
-  switch (keyEvent.keySymbol)
+  switch (event.keySymbol)
     {
   case DIKS_CURSOR_LEFT:
   case DIKS_CURSOR_UP:
@@ -282,27 +295,25 @@ SliderBase::pointerButtonDownEvent(const PointerEvent& event)
       int cursor;
       if (_orientation == Horizontal)
         {
-          if (mouseLocal.x() < _sRect.x())
-            cursor = 0;
-          else if (mouseLocal.x() > _sRect.right())
-            cursor = _sRect.width();
+          if (_inverted)
+            {
+              if (mouseLocal.x() < _sRect.x())
+                cursor = _sRect.width();
+              else if (mouseLocal.x() > _sRect.right())
+                cursor = 0;
+              else
+                cursor = _sRect.right() - mouseLocal.x();
+            }
           else
-            cursor = mouseLocal.x() - _sRect.x();
+            {
+              if (mouseLocal.x() < _sRect.x())
+                cursor = 0;
+              else if (mouseLocal.x() > _sRect.right())
+                cursor = _sRect.width();
+              else
+                cursor = mouseLocal.x() - _sRect.x();
+            }
           int value = _range * cursor / (_sRect.width() + .0);
-          if (value != _value)
-            setValue(value);
-          else
-            update();
-        }
-      else if (_inverted) // Vertical orientation & inverted
-        {
-          if (mouseLocal.y() < _sRect.y())
-            cursor = 0;
-          else if (mouseLocal.y() > _sRect.bottom())
-            cursor = _sRect.height();
-          else
-            cursor = mouseLocal.y() - _sRect.y();
-          int value = _range * cursor / (_sRect.height() + .0);
           if (value != _value)
             setValue(value);
           else
@@ -310,12 +321,24 @@ SliderBase::pointerButtonDownEvent(const PointerEvent& event)
         }
       else // Vertical orientation
         {
-          if (mouseLocal.y() < _sRect.y())
-            cursor = _sRect.height();
-          else if (mouseLocal.y() > _sRect.bottom())
-            cursor = 0;
-          else
-            cursor = _sRect.bottom() - mouseLocal.y();
+          if (_inverted)
+            {
+              if (mouseLocal.y() < _sRect.y())
+                cursor = 0;
+              else if (mouseLocal.y() > _sRect.bottom())
+                cursor = _sRect.height();
+              else
+                cursor = mouseLocal.y() - _sRect.y();
+            }
+          else // Vertical orientation
+            {
+              if (mouseLocal.y() < _sRect.y())
+                cursor = _sRect.height();
+              else if (mouseLocal.y() > _sRect.bottom())
+                cursor = 0;
+              else
+                cursor = _sRect.bottom() - mouseLocal.y();
+            }
           int value = _range * cursor / (_sRect.height() + .0);
           if (value != _value)
             setValue(value);
@@ -325,24 +348,37 @@ SliderBase::pointerButtonDownEvent(const PointerEvent& event)
     }
   else if (_orientation == Horizontal)
     {
-      if (mouseLocal.x() > _indicator.x())
-        addAmount(_pageStep);
+      if (_inverted)
+        {
+          if (mouseLocal.x() > _indicator.x())
+            subAmount(_pageStep);
+          else
+            addAmount(_pageStep);
+        }
       else
-        subAmount(_pageStep);
+        {
+          if (mouseLocal.x() > _indicator.x())
+            addAmount(_pageStep);
+          else
+            subAmount(_pageStep);
+        }
     }
-  else if (_inverted)
+  else // Vertical orientation
     {
-      if (mouseLocal.y() > _indicator.y())
-        addAmount(_pageStep);
+      if (_inverted)
+        {
+          if (mouseLocal.y() > _indicator.y())
+            addAmount(_pageStep);
+          else
+            subAmount(_pageStep);
+        }
       else
-        subAmount(_pageStep);
-    }
-  else
-    {
-      if (mouseLocal.y() > _indicator.y())
-        subAmount(_pageStep);
-      else
-        addAmount(_pageStep);
+        {
+          if (mouseLocal.y() > _indicator.y())
+            subAmount(_pageStep);
+          else
+            addAmount(_pageStep);
+        }
     }
 }
 
@@ -362,32 +398,46 @@ SliderBase::pointerMotionEvent(const PointerEvent& event)
       int cursor;
       if (_orientation == Horizontal)
         {
-          if (mouseLocal.x() < _sRect.x())
-            cursor = 0;
-          else if (mouseLocal.x() > _sRect.right())
-            cursor = _sRect.width();
+          if (_inverted)
+            {
+              if (mouseLocal.x() < _sRect.x())
+                cursor = _sRect.width();
+              else if (mouseLocal.x() > _sRect.right())
+                cursor = 0;
+              else
+                cursor = _sRect.right() - mouseLocal.x();
+            }
           else
-            cursor = mouseLocal.x() - _sRect.x();
+            {
+              if (mouseLocal.x() < _sRect.x())
+                cursor = 0;
+              else if (mouseLocal.x() > _sRect.right())
+                cursor = _sRect.width();
+              else
+                cursor = mouseLocal.x() - _sRect.x();
+            }
           setValue(_range * cursor / (_sRect.width() + .0));
         }
-      else if (_inverted)
+      else // Vertical orientation
         {
-          if (mouseLocal.y() < _sRect.y())
-            cursor = 0;
-          else if (mouseLocal.y() > _sRect.bottom())
-            cursor = _sRect.height();
+          if (_inverted)
+            {
+              if (mouseLocal.y() < _sRect.y())
+                cursor = 0;
+              else if (mouseLocal.y() > _sRect.bottom())
+                cursor = _sRect.height();
+              else
+                cursor = mouseLocal.y() - _sRect.y();
+            }
           else
-            cursor = mouseLocal.y() - _sRect.y();
-          setValue(_range * cursor / (_sRect.height() + .0));
-        }
-      else
-        {
-          if (mouseLocal.y() < _sRect.y())
-            cursor = _sRect.height();
-          else if (mouseLocal.y() > _sRect.bottom())
-            cursor = 0;
-          else
-            cursor = _sRect.bottom() - mouseLocal.y();
+            {
+              if (mouseLocal.y() < _sRect.y())
+                cursor = _sRect.height();
+              else if (mouseLocal.y() > _sRect.bottom())
+                cursor = 0;
+              else
+                cursor = _sRect.bottom() - mouseLocal.y();
+            }
           setValue(_range * cursor / (_sRect.height() + .0));
         }
     }
@@ -408,13 +458,25 @@ SliderBase::pointerWheelEvent(const PointerEvent& event)
 }
 
 void
-SliderBase::enterEvent(const PointerEvent& mouseEvent)
+SliderBase::enterEvent(const PointerEvent& event)
 {
   update();
 }
 
 void
-SliderBase::leaveEvent(const PointerEvent& mouseEvent)
+SliderBase::leaveEvent(const PointerEvent& event)
+{
+  update();
+}
+
+void
+SliderBase::focusInEvent()
+{
+  update();
+}
+
+void
+SliderBase::focusOutEvent()
 {
   update();
 }

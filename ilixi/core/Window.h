@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_WINDOW_H_
@@ -28,9 +30,10 @@
 
 namespace ilixi
 {
-  //! Creates DirectFB window.
+  //! Creates a DirectFB window.
   /*!
-   * This class is used to create and maintain a DirectFB window.
+   * Each application has at least one window and this class creates and maintains a list of DirectFB windows.
+   * Windows also store a list of child widgets using UIManager which helps to transfer input events.
    */
   class Window
   {
@@ -73,7 +76,7 @@ namespace ilixi
      * Returns and interface to the focus manager.
      */
     UIManager* const
-    windowFocusManager() const;
+    windowUIManager() const;
 
     /*!
      * Returns pixel format of window surfaces.
@@ -161,8 +164,8 @@ namespace ilixi
      * Create and initialise DirectFB window interfaces.
      */
     void
-    initDFBWindow(int x = 0, int y = -1, int w = 0, int h = 0, bool dialog =
-        false);
+    initDFBWindow(int x = 0, int y = -1, int w = 0, int h = 0,
+        bool dialog = false);
 
     /*!
      * Release DirectFB window interfaces.
@@ -187,20 +190,30 @@ namespace ilixi
   private:
     //! This property holds the number of existing windows inside a main application, e.g. dialogs.
     static int _windowCount;
-
+    //! Parent window, if any.
     Window* _parentWindow;
+    //! DirectFB window ID (global).
+    DFBWindowID _DFBwindowID;
+    //! Application wide window ID.
+    int _windowID;
 
-    DFBWindowID _id;
+    typedef std::list<Window*> windowList;
+    typedef windowList::iterator windowListIterator;
 
+    //! Application wide list of windows.
+    static windowList _windowList;
+    //! Window with focus.
     static Window* _activeWindow;
-
+    //! Serialises access to static variables.
     static pthread_mutex_t _windowMutex;
 
-    /*!
-     * Release DirectFB interface if it exists.
-     */
+    //! Releases DirectFB resources.
     static void
     releaseDFB();
+
+    virtual void
+    updateWindow() =0;
+
   };
 
 }

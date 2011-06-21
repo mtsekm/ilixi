@@ -9,7 +9,9 @@ AUTOMAKE_OPTIONS	= 	subdir-objects
 SUBDIRS			= 	$(PACKAGE) data bin
 DIST_SUBDIRS		= 	$(PACKAGE) data bin doc
 EXTRA_DIST 		= 	COPYING \
+COPYING.LESSER \
 				README \
 				TODO \
 				config/m4
 MOSTLYCLEANFILES 	= 	$(DX_CLEANFILES)
+                

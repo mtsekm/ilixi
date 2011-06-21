@@ -35,9 +35,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = ilixi_gallery$(EXEEXT)
-subdir = bin/widget_gallery
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+subdir = ilixi/lib
+DIST_COMMON = $(ilixi_include_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/m4/libtool.m4 \
 	$(top_srcdir)/config/m4/ltoptions.m4 \
@@ -52,12 +52,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(miscdatadir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_ilixi_gallery_OBJECTS = ilixi_gallery-WidgetGallery.$(OBJEXT)
-ilixi_gallery_OBJECTS = $(am_ilixi_gallery_OBJECTS)
-ilixi_gallery_DEPENDENCIES =  \
-	$(top_srcdir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libilixi_lib_la_DEPENDENCIES =
+am_libilixi_lib_la_OBJECTS = libilixi_lib_la-SQLITE3Driver.lo \
+	libilixi_lib_la-Animation.lo libilixi_lib_la-Easing.lo \
+	libilixi_lib_la-Tween.lo libilixi_lib_la-TweenAnimation.lo
+libilixi_lib_la_OBJECTS = $(am_libilixi_lib_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -71,17 +71,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-SOURCES = $(ilixi_gallery_SOURCES)
-DIST_SOURCES = $(ilixi_gallery_SOURCES)
+SOURCES = $(libilixi_lib_la_SOURCES)
+DIST_SOURCES = $(libilixi_lib_la_SOURCES)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -103,7 +94,8 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-DATA = $(miscdata_DATA)
+am__installdirs = "$(DESTDIR)$(ilixi_includedir)"
+HEADERS = $(ilixi_include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -266,12 +258,23 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-ilixi_gallery_LDADD = $(top_srcdir)/$(PACKAGE)/lib$(PACKAGE)-$(VERSION).la $(AM_LDFLAGS)
-ilixi_gallery_CPPFLAGS = -I$(top_srcdir)/$(PACKAGE) @DEPS_CFLAGS@
-ilixi_gallery_SOURCES = WidgetGallery.cpp WidgetGallery.h
-miscdatadir = $(ILIXI_DATADIR)
-miscdata_DATA = gallery.png						
-EXTRA_DIST = $(miscdata_DATA)
+INCLUDES = -I$(top_srcdir)/ilixi
+noinst_LTLIBRARIES = libilixi_lib.la
+libilixi_lib_la_CPPFLAGS = @DEPS_CFLAGS@
+libilixi_lib_la_LIBADD = @DEPS_LIBS@
+libilixi_lib_la_SOURCES = SQLITE3Driver.cpp \
+								Animation.cpp \
+								Easing.cpp \
+								Tween.cpp \
+								TweenAnimation.cpp 
+
+ilixi_includedir = $(includedir)/$(PACKAGE)-$(VERSION)/lib
+ilixi_include_HEADERS = SQLITE3Driver.h \
+								Animation.h \
+								Easing.h \
+								Tween.h \
+								TweenAnimation.h 
+
 all: all-am
 
 .SUFFIXES:
@@ -285,9 +288,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu bin/widget_gallery/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu ilixi/lib/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu bin/widget_gallery/Makefile
+	  $(AUTOMAKE) --gnu ilixi/lib/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -306,52 +309,17 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p || test -f $$p1; \
-	  then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
 
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' `; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
-
-clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
-ilixi_gallery$(EXEEXT): $(ilixi_gallery_OBJECTS) $(ilixi_gallery_DEPENDENCIES) 
-	@rm -f ilixi_gallery$(EXEEXT)
-	$(CXXLINK) $(ilixi_gallery_OBJECTS) $(ilixi_gallery_LDADD) $(LIBS)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libilixi_lib.la: $(libilixi_lib_la_OBJECTS) $(libilixi_lib_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libilixi_lib_la_OBJECTS) $(libilixi_lib_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -359,7 +327,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ilixi_gallery-WidgetGallery.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_lib_la-Animation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_lib_la-Easing.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_lib_la-SQLITE3Driver.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_lib_la-Tween.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_lib_la-TweenAnimation.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -382,45 +354,66 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-ilixi_gallery-WidgetGallery.o: WidgetGallery.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ilixi_gallery_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ilixi_gallery-WidgetGallery.o -MD -MP -MF $(DEPDIR)/ilixi_gallery-WidgetGallery.Tpo -c -o ilixi_gallery-WidgetGallery.o `test -f 'WidgetGallery.cpp' || echo '$(srcdir)/'`WidgetGallery.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ilixi_gallery-WidgetGallery.Tpo $(DEPDIR)/ilixi_gallery-WidgetGallery.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='WidgetGallery.cpp' object='ilixi_gallery-WidgetGallery.o' libtool=no @AMDEPBACKSLASH@
+libilixi_lib_la-SQLITE3Driver.lo: SQLITE3Driver.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_lib_la-SQLITE3Driver.lo -MD -MP -MF $(DEPDIR)/libilixi_lib_la-SQLITE3Driver.Tpo -c -o libilixi_lib_la-SQLITE3Driver.lo `test -f 'SQLITE3Driver.cpp' || echo '$(srcdir)/'`SQLITE3Driver.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_lib_la-SQLITE3Driver.Tpo $(DEPDIR)/libilixi_lib_la-SQLITE3Driver.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SQLITE3Driver.cpp' object='libilixi_lib_la-SQLITE3Driver.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ilixi_gallery_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ilixi_gallery-WidgetGallery.o `test -f 'WidgetGallery.cpp' || echo '$(srcdir)/'`WidgetGallery.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_lib_la-SQLITE3Driver.lo `test -f 'SQLITE3Driver.cpp' || echo '$(srcdir)/'`SQLITE3Driver.cpp
 
-ilixi_gallery-WidgetGallery.obj: WidgetGallery.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ilixi_gallery_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ilixi_gallery-WidgetGallery.obj -MD -MP -MF $(DEPDIR)/ilixi_gallery-WidgetGallery.Tpo -c -o ilixi_gallery-WidgetGallery.obj `if test -f 'WidgetGallery.cpp'; then $(CYGPATH_W) 'WidgetGallery.cpp'; else $(CYGPATH_W) '$(srcdir)/WidgetGallery.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ilixi_gallery-WidgetGallery.Tpo $(DEPDIR)/ilixi_gallery-WidgetGallery.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='WidgetGallery.cpp' object='ilixi_gallery-WidgetGallery.obj' libtool=no @AMDEPBACKSLASH@
+libilixi_lib_la-Animation.lo: Animation.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_lib_la-Animation.lo -MD -MP -MF $(DEPDIR)/libilixi_lib_la-Animation.Tpo -c -o libilixi_lib_la-Animation.lo `test -f 'Animation.cpp' || echo '$(srcdir)/'`Animation.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_lib_la-Animation.Tpo $(DEPDIR)/libilixi_lib_la-Animation.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Animation.cpp' object='libilixi_lib_la-Animation.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ilixi_gallery_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ilixi_gallery-WidgetGallery.obj `if test -f 'WidgetGallery.cpp'; then $(CYGPATH_W) 'WidgetGallery.cpp'; else $(CYGPATH_W) '$(srcdir)/WidgetGallery.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_lib_la-Animation.lo `test -f 'Animation.cpp' || echo '$(srcdir)/'`Animation.cpp
+
+libilixi_lib_la-Easing.lo: Easing.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_lib_la-Easing.lo -MD -MP -MF $(DEPDIR)/libilixi_lib_la-Easing.Tpo -c -o libilixi_lib_la-Easing.lo `test -f 'Easing.cpp' || echo '$(srcdir)/'`Easing.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_lib_la-Easing.Tpo $(DEPDIR)/libilixi_lib_la-Easing.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Easing.cpp' object='libilixi_lib_la-Easing.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_lib_la-Easing.lo `test -f 'Easing.cpp' || echo '$(srcdir)/'`Easing.cpp
+
+libilixi_lib_la-Tween.lo: Tween.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_lib_la-Tween.lo -MD -MP -MF $(DEPDIR)/libilixi_lib_la-Tween.Tpo -c -o libilixi_lib_la-Tween.lo `test -f 'Tween.cpp' || echo '$(srcdir)/'`Tween.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_lib_la-Tween.Tpo $(DEPDIR)/libilixi_lib_la-Tween.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Tween.cpp' object='libilixi_lib_la-Tween.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_lib_la-Tween.lo `test -f 'Tween.cpp' || echo '$(srcdir)/'`Tween.cpp
+
+libilixi_lib_la-TweenAnimation.lo: TweenAnimation.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_lib_la-TweenAnimation.lo -MD -MP -MF $(DEPDIR)/libilixi_lib_la-TweenAnimation.Tpo -c -o libilixi_lib_la-TweenAnimation.lo `test -f 'TweenAnimation.cpp' || echo '$(srcdir)/'`TweenAnimation.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_lib_la-TweenAnimation.Tpo $(DEPDIR)/libilixi_lib_la-TweenAnimation.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TweenAnimation.cpp' object='libilixi_lib_la-TweenAnimation.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_lib_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_lib_la-TweenAnimation.lo `test -f 'TweenAnimation.cpp' || echo '$(srcdir)/'`TweenAnimation.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-miscdataDATA: $(miscdata_DATA)
+install-ilixi_includeHEADERS: $(ilixi_include_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(miscdatadir)" || $(MKDIR_P) "$(DESTDIR)$(miscdatadir)"
-	@list='$(miscdata_DATA)'; test -n "$(miscdatadir)" || list=; \
+	test -z "$(ilixi_includedir)" || $(MKDIR_P) "$(DESTDIR)$(ilixi_includedir)"
+	@list='$(ilixi_include_HEADERS)'; test -n "$(ilixi_includedir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(miscdatadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(miscdatadir)" || exit $$?; \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(ilixi_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(ilixi_includedir)" || exit $$?; \
 	done
 
-uninstall-miscdataDATA:
+uninstall-ilixi_includeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(miscdata_DATA)'; test -n "$(miscdatadir)" || list=; \
+	@list='$(ilixi_include_HEADERS)'; test -n "$(ilixi_includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(miscdatadir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(miscdatadir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(ilixi_includedir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(ilixi_includedir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -506,9 +499,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(DATA)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(miscdatadir)"; do \
+	for dir in "$(DESTDIR)$(ilixi_includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -538,7 +531,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -558,13 +552,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-miscdataDATA
+install-data-am: install-ilixi_includeHEADERS
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -604,23 +598,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-miscdataDATA
+uninstall-am: uninstall-ilixi_includeHEADERS
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-miscdataDATA install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-miscdataDATA
+	install-html-am install-ilixi_includeHEADERS install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-ilixi_includeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

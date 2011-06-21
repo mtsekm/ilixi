@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_APPLICATION_H_
@@ -24,7 +26,8 @@
 
 #include "core/AppBase.h"
 #include "core/Window.h"
-#include "ui/Frame.h"
+//#include "ui/Frame.h"
+#include "ui/WindowWidget.h"
 
 namespace ilixi
 {
@@ -33,7 +36,7 @@ namespace ilixi
    * This class is used to create a new UI application.
    */
   // Window is inherited with virtual keyword in order to specify a destruction hierarchy.
-  class Application : public AppBase, virtual public Window, public Frame
+  class Application : public AppBase, public WindowWidget
   {
   public:
     /*!
@@ -47,14 +50,6 @@ namespace ilixi
 
     virtual
     ~Application();
-
-    /*!
-     * Invokes container's compose method.
-     *
-     * @sa Widget::drawBorder()
-     */
-    virtual void
-    paint(const Rectangle& rect, bool forceRepaint = false);
 
     //! This method is called when application window becomes hidden.
     virtual void
@@ -74,12 +69,6 @@ namespace ilixi
     void
     exec();
 
-    /*!
-     * This method executes update().
-     */
-    virtual void
-    doLayout();
-
   protected:
 
     //! Shows application window.
@@ -97,8 +86,8 @@ namespace ilixi
      * @param styleSheet
      */
     static void
-        setDesigner(const char* designer, const char* styleSheet =
-            "stylesheet.xml");
+        setDesigner(const char* designer,
+            const char* styleSheet = "stylesheet.xml");
 
     //! Sets whether application's window is fullscreen.
     void
@@ -119,14 +108,6 @@ namespace ilixi
     //! Paints background using current designer.
     virtual void
     compose(const Rectangle& rect);
-
-    /*!
-     * Process upcoming event from the DFB windowing system.
-     *
-     * @param event
-     */
-    bool
-    handleWindowEvent(const DFBWindowEvent& event);
 
     /*!
      * This callback is called when a new message arrives on application's reactor channel.

@@ -70,7 +70,8 @@ am_libilixi_ui_la_OBJECTS = libilixi_ui_la-Application.lo \
 	libilixi_ui_la-SliderBase.lo libilixi_ui_la-SpinBox.lo \
 	libilixi_ui_la-TabPanel.lo libilixi_ui_la-TextLayout.lo \
 	libilixi_ui_la-ToolBar.lo libilixi_ui_la-ToolButton.lo \
-	libilixi_ui_la-VBoxLayout.lo libilixi_ui_la-Widget.lo
+	libilixi_ui_la-VBoxLayout.lo libilixi_ui_la-VideoPlayer.lo \
+	libilixi_ui_la-Widget.lo libilixi_ui_la-WindowWidget.lo
 libilixi_ui_la_OBJECTS = $(am_libilixi_ui_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -308,7 +309,9 @@ libilixi_ui_la_SOURCES = Application.cpp \
 							ToolBar.cpp \
 							ToolButton.cpp \
 							VBoxLayout.cpp \
-							Widget.cpp
+							VideoPlayer.cpp \
+							Widget.cpp \
+							WindowWidget.cpp
 
 ilixi_includedir = $(includedir)/$(PACKAGE)-$(VERSION)/ui
 ilixi_include_HEADERS = Application.h \
@@ -343,7 +346,9 @@ ilixi_include_HEADERS = Application.h \
 							ToolBar.h \
 							ToolButton.h \
 							VBoxLayout.h \
-							Widget.h
+							VideoPlayer.h \
+							Widget.h \
+							WindowWidget.h 
 
 all: all-am
 
@@ -429,7 +434,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-ToolBar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-ToolButton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-VBoxLayout.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-VideoPlayer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-Widget.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libilixi_ui_la-WindowWidget.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -676,12 +683,26 @@ libilixi_ui_la-VBoxLayout.lo: VBoxLayout.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_ui_la-VBoxLayout.lo `test -f 'VBoxLayout.cpp' || echo '$(srcdir)/'`VBoxLayout.cpp
 
+libilixi_ui_la-VideoPlayer.lo: VideoPlayer.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_ui_la-VideoPlayer.lo -MD -MP -MF $(DEPDIR)/libilixi_ui_la-VideoPlayer.Tpo -c -o libilixi_ui_la-VideoPlayer.lo `test -f 'VideoPlayer.cpp' || echo '$(srcdir)/'`VideoPlayer.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_ui_la-VideoPlayer.Tpo $(DEPDIR)/libilixi_ui_la-VideoPlayer.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='VideoPlayer.cpp' object='libilixi_ui_la-VideoPlayer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_ui_la-VideoPlayer.lo `test -f 'VideoPlayer.cpp' || echo '$(srcdir)/'`VideoPlayer.cpp
+
 libilixi_ui_la-Widget.lo: Widget.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_ui_la-Widget.lo -MD -MP -MF $(DEPDIR)/libilixi_ui_la-Widget.Tpo -c -o libilixi_ui_la-Widget.lo `test -f 'Widget.cpp' || echo '$(srcdir)/'`Widget.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_ui_la-Widget.Tpo $(DEPDIR)/libilixi_ui_la-Widget.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Widget.cpp' object='libilixi_ui_la-Widget.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_ui_la-Widget.lo `test -f 'Widget.cpp' || echo '$(srcdir)/'`Widget.cpp
+
+libilixi_ui_la-WindowWidget.lo: WindowWidget.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libilixi_ui_la-WindowWidget.lo -MD -MP -MF $(DEPDIR)/libilixi_ui_la-WindowWidget.Tpo -c -o libilixi_ui_la-WindowWidget.lo `test -f 'WindowWidget.cpp' || echo '$(srcdir)/'`WindowWidget.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libilixi_ui_la-WindowWidget.Tpo $(DEPDIR)/libilixi_ui_la-WindowWidget.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='WindowWidget.cpp' object='libilixi_ui_la-WindowWidget.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libilixi_ui_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libilixi_ui_la-WindowWidget.lo `test -f 'WindowWidget.cpp' || echo '$(srcdir)/'`WindowWidget.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

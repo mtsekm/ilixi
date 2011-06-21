@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_DIALOG_H_
@@ -25,10 +27,11 @@
 #include "core/Window.h"
 #include "ui/Frame.h"
 #include "ui/HBoxLayout.h"
+#include "ui/WindowWidget.h"
 
 namespace ilixi
 {
-  class Dialog : virtual public Window, public Frame
+  class Dialog : public WindowWidget //virtual public Window, public Frame
   {
   public:
     //! This enum designates the buttons shown on the dialog.
@@ -129,21 +132,6 @@ namespace ilixi
      */
     void
     setTitle(const std::string& title);
-
-    /*!
-     * Paints dialog and its contents.
-     *
-     * @param targetArea
-     * @param forceRepaint
-     */
-    virtual void
-    paint(const Rectangle& targetArea, bool forceRepaint = false);
-
-    /*!
-     * This method executes update().
-     */
-    virtual void
-    doLayout();
 
     /*!
      * This signal is emitted when the dialog is accepted.

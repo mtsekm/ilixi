@@ -36,7 +36,9 @@ libilixi_ui_la_SOURCES 	= 	Application.cpp \
 							ToolBar.cpp \
 							ToolButton.cpp \
 							VBoxLayout.cpp \
-							Widget.cpp
+							VideoPlayer.cpp \
+							Widget.cpp \
+							WindowWidget.cpp
 
 ilixi_includedir 		= 	$(includedir)/$(PACKAGE)-$(VERSION)/ui
 ilixi_include_HEADERS 	= 	Application.h \
@@ -71,5 +73,7 @@ ilixi_include_HEADERS 	= 	Application.h \
 							ToolBar.h \
 							ToolButton.h \
 							VBoxLayout.h \
-							Widget.h
+							VideoPlayer.h \
+							Widget.h \
+							WindowWidget.h 
 

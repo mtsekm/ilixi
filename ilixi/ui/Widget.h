@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_WIDGET_H_
@@ -29,23 +31,42 @@
 #include <list>
 #include <string>
 #include <sigc++/signal.h>
+#include "core/Thread.h"
 
 namespace ilixi
 {
   class UIManager;
   class Window;
 
+  class WidgetThread : public Thread
+  {
+  public:
+    WidgetThread(Widget* parent);
+
+    ~WidgetThread();
+
+    int
+    run();
+
+  private:
+    Widget* _parent;
+    int _delay;
+  };
+
   //! Base class of all UI objects.
+  /*!
+   * The widget class is at the core of all UI elements. It creates a surface
+   * to paint itself, maintains a list of children widgets and receives input events.
+   */
   class Widget : virtual public sigc::trackable
   {
     friend class Application; // sets UIManager and _designer.
     friend class Dialog; // sets UIManager
+    friend class WindowWidget;
     friend class UIManager;
   public:
     /*!
      * Constructor.
-     *
-     *
      *
      * @param parent widget's parent.
      */
@@ -54,8 +75,8 @@ namespace ilixi
     /*!
      * Destructor.
      *
-     * Releases its surface. Deletes children widgets. Removes itself
-     * and its children from the UIManager.
+     * Releases surface. Deletes children widgets. Removes itself
+     * from the UIManager.
      */
     virtual
     ~Widget();
@@ -492,22 +513,21 @@ namespace ilixi
     setPointerTracking(bool pointerTracking);
 
     /*!
-     * Invokes widget's compose method only if widget is visible and target rectangle
-     * intersects with widget's paint geometry.
+     * Invokes widget's compose method only if widget is visible and target area
+     * intersects with widget's absolute geometry.
      *
      * Warning: You should not override this method unless you know what you are doing.
      *
-     * @param targetArea
-     * @param forceRepaint If true widget will paint
+     * @param targetArea Bounding rectangle to paint in absolute coordinates.
      *
      * @sa compose()
      */
     virtual void
-    paint(const Rectangle& targetArea, bool forceRepaint = false);
+    paint(const Rectangle& targetArea);
 
     /*!
-     * Repaints widget without any clipping. Result will not be displayed
-     * until surface is flipped if it is double-buffered.
+     * Repaints widget immediately without any clipping. This method is useful if widget
+     * has animations. You should use update() method if you need to simply redraw widget and its contents.
      *
      * @sa update()
      */
@@ -515,10 +535,20 @@ namespace ilixi
     repaint();
 
     /*!
-     * Repaints widget and updates display.
+     * Repaints inside given rectangle.
+     *
+     * @param rect Bounding rectangle to repaint in absolute coordinates.
+     */
+    virtual void
+    repaint(const Rectangle& rect);
+
+    /*!
+     * Repaints widget and updates parent window inside main event loop.
      *
      * Widgets intersecting this widget's frame geometry
      * are also painted.
+     *
+     * @sa repaint()
      */
     void
     update();
@@ -526,7 +556,7 @@ namespace ilixi
     /*!
      * This method will repaint inside given rectangle.
      *
-     * @param rect Bounding rectangle to update.
+     * @param rect Bounding rectangle to update in absolute coordinates.
      */
     void
     update(const Rectangle& rect);
@@ -844,16 +874,6 @@ namespace ilixi
     virtual void
     leaveEvent(const PointerEvent& pointerEvent);
 
-    /*!
-     * Given a rectangle calculates an intersection for painting.
-     *
-     * @param rect Area to paint.
-     * @param forceRepaint If true whole surface is returned.
-     * @return An intersection on widget's surface.
-     */
-    Rectangle
-    getIntersectionForPaint(const Rectangle& rect, bool forceRepaint);
-
   private:
     //! widget's parent.
     Widget* _parent;
@@ -896,6 +916,8 @@ namespace ilixi
      * @sa Application::setDesigner()
      */
     static Designer* _designer;
+
+    WidgetThread* _widgetThread;
 
     /*!
      * This method attaches widget to given UIManager.

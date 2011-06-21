@@ -5,25 +5,25 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/ScrollArea.h"
 #include "graphics/Painter.h"
-//#include "widgets/HBoxLayout.h"
-
-#include "core/Logger.h"
+//#include "core/Logger.h"
 
 using namespace ilixi;
 
@@ -39,16 +39,16 @@ ScrollArea::ScrollArea(Widget* parent) :
 
   _hSlider = new ScrollBar(this);
   _hSlider->setVisible(false);
-  _hSlider->sigValueChanged.connect(sigc::mem_fun(this,
-      &ScrollArea::slideHorizontal));
+  _hSlider->sigValueChanged.connect(
+      sigc::mem_fun(this, &ScrollArea::slideHorizontal));
   addChild(_hSlider);
 
   _vSlider = new ScrollBar(this);
   _vSlider->setVisible(false);
   _vSlider->setOrientation(Vertical);
   _vSlider->setInverted(true);
-  _vSlider->sigValueChanged.connect(sigc::mem_fun(this,
-      &ScrollArea::slideVertical));
+  _vSlider->sigValueChanged.connect(
+      sigc::mem_fun(this, &ScrollArea::slideVertical));
   addChild(_vSlider);
 }
 
@@ -108,12 +108,12 @@ ScrollArea::setLayout(LayoutBase* layout)
 }
 
 void
-ScrollArea::paint(const Rectangle& rect, bool forceRepaint)
+ScrollArea::paint(const Rectangle& rect)
 {
   if (visible())
     {
       updateSurface();
-      Rectangle intersect = getIntersectionForPaint(rect, forceRepaint);
+      Rectangle intersect = _frameGeometry.intersected(rect);
       if (intersect.isValid())
         {
           compose(mapToSurface(intersect));
@@ -122,9 +122,14 @@ ScrollArea::paint(const Rectangle& rect, bool forceRepaint)
 
           if (rect.intersects(_layout->_frameGeometry))
             {
+              if (_layout->surface())
+                _layout->surface()->clear(intersect);
               _layout->paint(intersect);
-              _layout->blit(this, Rectangle(-_widgetOffsetX, -_widgetOffsetY,
-                  canvasWidth(), canvasHeight()), canvasX(), canvasY());
+              _layout->flip(_layout->mapToSurface(intersect));
+              _layout->blit(
+                  this,
+                  Rectangle(-_widgetOffsetX, -_widgetOffsetY, canvasWidth(),
+                      canvasHeight()), canvasX(), canvasY());
             }
         }
     }
@@ -167,7 +172,6 @@ void
 ScrollArea::updateLayoutGeometry()
 {
   _layoutSize = _layout->preferredSize();
-  ILOG_DEBUG("LS: %d, %d", _layoutSize.width(), _layoutSize.height());
 
   // Set horizontal scroll bar visibility
   if (_hSliderMode == AlwaysVisible)
@@ -216,7 +220,6 @@ ScrollArea::updateLayoutGeometry()
       int max = _layoutSize.width() - canvasWidth();
       _hSlider->setMaximum(max);
       _hSlider->setPageStep(max / 10);
-      ILOG_DEBUG("HMAX: %d", max / 10);
     }
 
   if (_vSlider->visible())
@@ -224,7 +227,6 @@ ScrollArea::updateLayoutGeometry()
       int max = _layoutSize.height() - canvasHeight();
       _vSlider->setMaximum(max);
       _vSlider->setPageStep(max / 10);
-      ILOG_DEBUG("VMAX: %d", max / 10);
     }
 
   // Set Layout's Frame Geometry (FG)
@@ -243,8 +245,6 @@ ScrollArea::updateLayoutGeometry()
     _layout->setHeight(canvasHeight());
   else
     _layout->setHeight(_layoutSize.height());
-  //  _layout->updateFrameGeometry();
-  //  _layout->paint();
 }
 
 void
@@ -261,15 +261,6 @@ void
 ScrollArea::blitLayout()
 {
   _layout->moveTo(_widgetOffsetX, _widgetOffsetY);
-  _layout->updateFrameGeometry();
-  //  LOG_DEBUG("L %d, %d - %d %d", _layout->_surfaceGeometry.x(), _layout->_surfaceGeometry.y(), _widgetOffsetX, _widgetOffsetY);
-  surface()->clear(Rectangle(canvasX(), canvasY(), canvasWidth(),
-      canvasHeight()));
-
-  if (_backgroundFilled)
-    compose(Rectangle(canvasX(), canvasY(), canvasWidth(), canvasHeight()));
-
-  _layout->blit(this, Rectangle(-_widgetOffsetX, -_widgetOffsetY,
-      canvasWidth(), canvasHeight()), canvasX(), canvasY());
-  flip(Rectangle(canvasX(), canvasY(), canvasWidth(), canvasHeight()));
+  _layout->update(
+      mapFromSurface(canvasX(), canvasY(), canvasWidth(), canvasHeight()));
 }

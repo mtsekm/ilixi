@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/ScrollBar.h"
@@ -70,14 +72,14 @@ ScrollBar::ScrollBar(Widget* parent) :
   SliderBase(parent), _thread(this)
 {
   button1 = new DirectionalButton(DirectionalButton::ArrowButton, Left, this);
-  button1->sigPressed.connect(sigc::bind<int>(sigc::mem_fun(this,
-      &ScrollBar::startSlide), -1));
+  button1->sigPressed.connect(
+      sigc::bind<int>(sigc::mem_fun(this, &ScrollBar::startSlide), -1));
   button1->sigReleased.connect(sigc::mem_fun(this, &ScrollBar::stopSlide));
   addChild(button1);
 
   button2 = new DirectionalButton(DirectionalButton::ArrowButton, Right, this);
-  button2->sigPressed.connect(sigc::bind<int>(sigc::mem_fun(this,
-      &ScrollBar::startSlide), 1));
+  button2->sigPressed.connect(
+      sigc::bind<int>(sigc::mem_fun(this, &ScrollBar::startSlide), 1));
   button2->sigReleased.connect(sigc::mem_fun(this, &ScrollBar::stopSlide));
   addChild(button2);
 
@@ -133,8 +135,8 @@ ScrollBar::updateFrameGeometry()
       _frameGeometry.setSize(buttonSize.width(), height());
 
       _indicatorRegion.moveTo(x, buttonSize.height() - 1);
-      _indicatorRegion.setSize(buttonSize.width(), height() - 2
-          * buttonSize.height() + 2);
+      _indicatorRegion.setSize(buttonSize.width(),
+          height() - 2 * buttonSize.height() + 2);
 
       int indicatorHeight = _indicatorRegion.height() * buttonSize.height()
           / 100;
@@ -142,10 +144,10 @@ ScrollBar::updateFrameGeometry()
         indicatorHeight = buttonSize.height();
       _indicator.setSize(_indicatorRegion.width(), indicatorHeight);
 
-      _sRect.moveTo(_indicatorRegion.x(), _indicatorRegion.y()
-          + _indicator.height() / 2);
-      _sRect.setSize(_indicatorRegion.width(), _indicatorRegion.height()
-          - _indicator.height());
+      _sRect.moveTo(_indicatorRegion.x(),
+          _indicatorRegion.y() + _indicator.height() / 2);
+      _sRect.setSize(_indicatorRegion.width(),
+          _indicatorRegion.height() - _indicator.height());
     }
   else
     {

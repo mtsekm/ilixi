@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/Button.h"
@@ -85,7 +87,7 @@ Button::click(unsigned int ms)
   if (ms)
     {
       _state = (WidgetState) (_state ^ PressedState);
-      update();
+      repaint();
       usleep(ms * 1000);
       _state = (WidgetState) (_state ^ PressedState);
     }
@@ -125,14 +127,14 @@ Button::setIcon(const std::string& iconPath, const Size& size)
 }
 
 void
-Button::keyUpEvent(const KeyEvent& keyEvent)
+Button::keyUpEvent(const KeyEvent& event)
 {
-  if (keyEvent.keySymbol == DIKS_SPACE)
+  if (event.keySymbol == DIKS_SPACE)
     click(50);
 }
 
 void
-Button::pointerButtonDownEvent(const PointerEvent& mouseEvent)
+Button::pointerButtonDownEvent(const PointerEvent& event)
 {
   _doClick = true;
   sigPressed();
@@ -140,7 +142,7 @@ Button::pointerButtonDownEvent(const PointerEvent& mouseEvent)
 }
 
 void
-Button::pointerButtonUpEvent(const PointerEvent& mouseEvent)
+Button::pointerButtonUpEvent(const PointerEvent& event)
 {
   sigReleased();
   if (_doClick)
@@ -152,13 +154,25 @@ Button::pointerButtonUpEvent(const PointerEvent& mouseEvent)
 }
 
 void
-Button::enterEvent(const PointerEvent& mouseEvent)
+Button::enterEvent(const PointerEvent& event)
 {
   update();
 }
 
 void
-Button::leaveEvent(const PointerEvent& mouseEvent)
+Button::leaveEvent(const PointerEvent& event)
+{
+  update();
+}
+
+void
+Button::focusInEvent()
+{
+  update();
+}
+
+void
+Button::focusOutEvent()
 {
   update();
 }

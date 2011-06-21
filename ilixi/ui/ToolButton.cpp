@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ui/ToolButton.h"
@@ -43,8 +45,8 @@ ToolButton::preferredSize() const
   if (text().empty() && !hasIcon())
     return defaultSize;
 
-  int hBorder = std::max(designer()->hint(BorderWidth), designer()->hint(
-      ButtonRadius));
+  int hBorder = std::max(designer()->hint(BorderWidth),
+      designer()->hint(ButtonRadius));
   int vBorder = designer()->hint(BorderWidth);
 
   int w = 2 * hBorder;
@@ -137,8 +139,8 @@ ToolButton::updateTextLayoutGeometry()
   int textHeight = textExtents().height();
   int iconW = 0;
   int iconH = 0;
-  int hBorder = std::max(designer()->hint(BorderWidth), designer()->hint(
-      ButtonRadius));
+  int hBorder = std::max(designer()->hint(BorderWidth),
+      designer()->hint(ButtonRadius));
   int vBorder = designer()->hint(BorderWidth);
   int wUsed = 2 * hBorder;
   int x = hBorder;
@@ -169,8 +171,8 @@ ToolButton::updateTextLayoutGeometry()
 
   else if (_toolButtonStyle == IconOnly)
     {
-      _iconPosition.moveTo(x + (width() - (iconW + wUsed)) / 2, (height()
-          - iconH) / 2 + 1);
+      _iconPosition.moveTo(x + (width() - (iconW + wUsed)) / 2,
+          (height() - iconH) / 2 + 1);
       setTextGeometry(0, 0, 0, 0);
       return;
     }
@@ -191,8 +193,8 @@ ToolButton::updateTextLayoutGeometry()
       setTextGeometry(x, vBorder, width() - wUsed, textHeight);
       if (iconW)
         {
-          _iconPosition.moveTo((width() - iconW) / 2, vBorder + textHeight + 1
-              + designer()->hint(ButtonOffset));
+          _iconPosition.moveTo((width() - iconW) / 2,
+              vBorder + textHeight + 1 + designer()->hint(ButtonOffset));
         }
     }
   else //  IconAboveText

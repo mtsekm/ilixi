@@ -77,8 +77,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(ilixi_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 lib@PACKAGE@_@ILIXI_VERSION@_la_DEPENDENCIES = core/libilixi_core.la \
-	graphics/libilixi_graphics.la types/libilixi_types.la \
-	ui/libilixi_ui.la
+	graphics/libilixi_graphics.la lib/libilixi_lib.la \
+	types/libilixi_types.la ui/libilixi_ui.la
 am_lib@PACKAGE@_@ILIXI_VERSION@_la_OBJECTS =
 lib@PACKAGE@_@ILIXI_VERSION@_la_OBJECTS =  \
 	$(am_lib@PACKAGE@_@ILIXI_VERSION@_la_OBJECTS)
@@ -299,13 +299,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = core graphics types ui
+SUBDIRS = core graphics lib types ui
 INCLUDES = -I$(top_srcdir)/ilixi -Wall
 lib_LTLIBRARIES = lib@PACKAGE@-@ILIXI_VERSION@.la
 lib@PACKAGE@_@ILIXI_VERSION@_la_CPPFLAGS = @DEPS_CFLAGS@
 lib@PACKAGE@_@ILIXI_VERSION@_la_LIBADD = @DEPS_LIBS@ \
 												core/libilixi_core.la \
 												graphics/libilixi_graphics.la \
+												lib/libilixi_lib.la \
 												types/libilixi_types.la \
 												ui/libilixi_ui.la
 

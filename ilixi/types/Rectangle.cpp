@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "types/Rectangle.h"
@@ -242,8 +244,27 @@ Rectangle::intersected(const Rectangle &r) const
 Rectangle
 Rectangle::united(const Rectangle &r) const
 {
-  return Rectangle(Point(min(left(), r.left()), min(top(), r.top())), Point(
-      max(right(), r.right()), max(bottom(), r.bottom())));
+  return Rectangle(Point(min(left(), r.left()), min(top(), r.top())),
+      Point(max(right(), r.right()), max(bottom(), r.bottom())));
+}
+
+void
+Rectangle::unite(const Rectangle &r)
+{
+  if (this != &r && !r.isNull())
+    {
+      if (left() > r.left())
+        setLeft(r.left());
+
+      if (top() > r.top())
+        setTop(r.top());
+
+      if (right() < r.right())
+        setRight(r.right());
+
+      if (bottom() < r.bottom())
+        setBottom(r.bottom());
+    }
 }
 
 void

@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_PAINTER_H_
@@ -327,8 +329,8 @@ namespace ilixi
      * @param mode Set painter's drawing mode.
      */
     void
-    drawLine(double x1, double y1, double x2, double y2, DrawingMode mode =
-        StrokePath);
+    drawLine(double x1, double y1, double x2, double y2,
+        DrawingMode mode = StrokePath);
 
     /*!
      * Draws a line between two given points p1 and p2.
@@ -365,8 +367,8 @@ namespace ilixi
      * @param mode Set painter's drawing mode.
      */
     void
-    drawPolygon(const Point* points, int pointCount, DrawingMode mode =
-        StrokePath);
+    drawPolygon(const Point* points, int pointCount,
+        DrawingMode mode = StrokePath);
 
     /*!
      * Draws a rectangle inside the bounding rectangle defined by top left point (x, y)
@@ -425,8 +427,8 @@ namespace ilixi
      */
     void
         drawRoundRectangle(double x, double y, double width, double height,
-            int radius, DrawingMode mode = StrokePath, Corners corners =
-                AllCorners);
+            int radius, DrawingMode mode = StrokePath,
+            Corners corners = AllCorners);
 
     /*!
      * Draws a rounded rectangle inside the bounding rectangle.
@@ -437,8 +439,8 @@ namespace ilixi
      * @param Corners specifies which corners should be rounded.
      */
     void
-    drawRoundRectangle(const Rectangle& rect, int radius, DrawingMode mode =
-        StrokePath, Corners corners = AllCorners);
+    drawRoundRectangle(const Rectangle& rect, int radius,
+        DrawingMode mode = StrokePath, Corners corners = AllCorners);
 
     /*!
      * Draws the text with its topleft positioned at given point (x, y). By default all text will be rendered.
@@ -464,8 +466,8 @@ namespace ilixi
      * @param mode Set painter's drawing mode.
      */
     void
-        drawText(const std::string& text, int x, int y, DrawingMode mode =
-            FillPath);
+        drawText(const std::string& text, int x, int y,
+            DrawingMode mode = FillPath);
 
     /*!
      * Renders the text inside the bounding rectangle defined by top left point (x, y)
@@ -510,9 +512,10 @@ namespace ilixi
         int alpha = 255);
 
     void
-    drawImage(Image* image, int x, int y, const DFBSurfaceBlittingFlags& flags =
-        DSBLIT_BLEND_ALPHACHANNEL, bool colorize = false, int red = 255,
-        int green = 255, int blue = 255, int alpha = 255);
+    drawImage(Image* image, int x, int y,
+        const DFBSurfaceBlittingFlags& flags = DSBLIT_BLEND_ALPHACHANNEL,
+        bool colorize = false, int red = 255, int green = 255, int blue = 255,
+        int alpha = 255);
 
     void
     drawPoint(double x, double y);

@@ -12,6 +12,6 @@ Name: @PACKAGE@
 Description: Lightweight C++ user interface toolkit for embedded Linux systems.
 Version: @VERSION@
 URL: @PACKAGE_URL@
-Requires.private: fusion directfb cairo-directfb pangocairo sigc++-2.0 mxml
+Requires.private: fusion directfb cairo-directfb pangocairo sigc++-2.0 libxml-2.0 sqlite3
 Libs: -L${libdir} -l@PACKAGE@-@VERSION@
 Cflags: -I${includedir}/@PACKAGE@-@VERSION@ -I${libdir}/@PACKAGE@-@VERSION@/include

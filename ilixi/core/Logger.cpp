@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "core/Logger.h"
@@ -28,13 +30,15 @@ using namespace ilixi;
 using namespace std;
 
 void
-ilixi::ilixi_log_init(char* ident)
+ilixi::ilixi_log_init(char* ident, int facility)
 {
 #if ILIXI_LOG_DEBUG_ENABLED == 0
-  setlogmask (
-  LOG_UPTO(LOG_NOTICE));
+  setlogmask(LOG_UPTO(LOG_NOTICE));
 #endif
-  openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, LOG_USER);
+  if (facility)
+    openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, facility);
+  else
+    openlog(ident, LOG_NDELAY | LOG_CONS | LOG_PID, LOG_USER);
 }
 
 void

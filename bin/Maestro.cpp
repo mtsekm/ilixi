@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "core/IFusion.h"
@@ -26,8 +28,8 @@
 #include <sys/wait.h>
 #include <fstream>
 #include <libgen.h>
-
-//#include "graphics/TDesigner.h"
+#include <sqlite3.h>
+#include <syslog.h>
 
 using namespace ilixi;
 
@@ -45,7 +47,6 @@ using namespace ilixi;
  * A Fusion reactor is used for sending display commands to active applications and receiving back status information.
  * A command could be sent to a single application using the channel which corresponds to the application's FusionID
  * or globally using channel 1. Applications should use channel 0 to send messages to Maestro.
- *
  */
 
 // This structure is used to store parameters.
@@ -66,13 +67,10 @@ struct Parameters
   // statusbar
   char STATUSBAR[150];
   short STATUSBAR_HEIGHT;
-  // home
+  // path home application
   char HOME[150];
-  // osk
+  // path to osk application
   char OSK[150];
-
-  //  char DESIGNER[100];
-  //  char STYLESHEET[100];
 };
 
 Parameters config;
@@ -170,11 +168,26 @@ start(int argc, char **argv)
 {
   parseConfig();
   if (initFusion(true))
-    printf("Maestro is already running!\n");
+    {
+      printf("Maestro is already running!\n");
+      ILOG_CLOSE();
+    }
   else
     createFork(argc, argv);
-  ILOG_CLOSE()
-    ;
+}
+
+//*****************************************************************
+// Stop Maestro.
+//*****************************************************************
+void
+stop()
+{
+  parseConfig();
+  if (initFusion(true))
+    {
+      callApp(1, SwitchMode, Terminated);
+      exitFusion(true);
+    }
 }
 
 //*****************************************************************
@@ -195,8 +208,8 @@ status()
           for (int i = 0; i < appCount; i++)
             {
               AppRecord *app = (AppRecord *) fusion_vector_at(appVector, i);
-              printf("%d\t%d\t%-20s\t%s\n", i, app->pid, app->title, (app->mode
-                  == Hidden) ? "Background" : "Foreground");
+              printf("%d\t%d\t%-20s\t%s\n", i, app->pid, app->title,
+                  (app->mode == Hidden) ? "Background" : "Foreground");
             }
         }
       else
@@ -205,9 +218,9 @@ status()
     }
   else
     printf("Please start Maestro\n");
-  ILOG_CLOSE()
-    ;
+  ILOG_CLOSE();
 }
+
 //*****************************************************************
 // Connect to ilixi dfb-fusion world and create objects in shared
 // memory.
@@ -217,8 +230,7 @@ bool
 initFusion(bool slaveMode)
 {
   ILOG_DEBUG("Attempting to enter DFB-World as %s...", slaveMode ? "Slave"
-      : "Master")
-    ;
+      : "Master");
   // FIXME Fusion ABI version = 45
   DirectResult result = fusion_enter(config.WORLD_INDEX, 45, FER_ANY, &world);
   if (result == DR_OK)
@@ -226,26 +238,22 @@ initFusion(bool slaveMode)
       bool master = fusion_master(world);
       ILOG_INFO("Entered DFB-World[%d] with ID: %lu, pid: %d as %s",
           fusion_world_index(world), fusion_id(world), getpid(),
-          master ? "Master" : "Slave")
-        ;
+          master ? "Master" : "Slave");
 
       if (slaveMode && master)
         {
-          ILOG_WARNING("Maestro-Master is not running.")
-            ;
+          ILOG_WARNING("Maestro is not running.");
           exitFusion(true);
           return false;
         }
 
       if (master)
         {
-          ILOG_DEBUG("Maestro-Master is creating DFB-Pool...")
-            ;
+          ILOG_DEBUG("Maestro-Master is creating DFB-Pool...");
           if (fusion_shm_pool_create(world, "ilixiPool", config.POOL_SIZE, 0,
               &pool) != DR_OK)
             {
-              ILOG_FATAL("fusion_shm_pool_create() failed!")
-                ;
+              ILOG_FATAL("fusion_shm_pool_create() failed!");
               return false;
             }
         }
@@ -254,43 +262,37 @@ initFusion(bool slaveMode)
       if (fusion_arena_enter(world, "ilixiArena", initArenaCB, joinArenaCB,
           NULL, &arena, &ret) != DR_OK)
         {
-          ILOG_FATAL("fusion_arena_enter() failed!")
-            ;
+          ILOG_FATAL("fusion_arena_enter() failed!");
           return false;
         }
 
       if (master)
         {
-          ILOG_DEBUG("Maestro-Master is setting up DFB-Reactor...")
-            ;
+          ILOG_DEBUG("Maestro-Master is setting up DFB-Reactor...");
           maestro->reactor = fusion_reactor_new(sizeof(ReactorMessage),
               "ilixiReactor", world);
           if (!maestro->reactor)
             {
-              ILOG_FATAL("fusion_reactor_new() failed!")
-                ;
+              ILOG_FATAL("fusion_reactor_new() failed!");
               return false;
             }
           // Attach a local reaction to the reactor at channel 0
           if (fusion_reactor_attach(maestro->reactor, reactionCB, NULL,
               &reaction) != DR_OK)
             {
-              ILOG_FATAL("fusion_reactor_attach() failed!")
-                ;
+              ILOG_FATAL("fusion_reactor_attach() failed!");
               return false;
             }
           if (fusion_call_init(&call, dispatchCB, NULL, world) != DR_OK)
             {
-              ILOG_FATAL("fusion_call_init() failed!")
-                ;
+              ILOG_FATAL("fusion_call_init() failed!");
               return false;
             }
           // Have the call executed when a dispatched message has been processed by all recipients.
           if (fusion_reactor_set_dispatch_callback(maestro->reactor, &call,
               NULL) != DR_OK)
             {
-              ILOG_FATAL("fusion_reactor_set_dispatch_callback() failed!")
-                ;
+              ILOG_FATAL("fusion_reactor_set_dispatch_callback() failed!");
               return false;
             }
         }
@@ -299,8 +301,7 @@ initFusion(bool slaveMode)
     }
   else
     {
-      ILOG_FATAL("Could not create DFB-World!")
-        ;
+      ILOG_FATAL("Could not create DFB-World!");
       return false;
     }
 }
@@ -315,8 +316,7 @@ exitFusion(bool slaveMode)
   if (arena)
     {
       ILOG_DEBUG("Maestro-%s (pid: %d) is leaving DFB-Arena...", slaveMode ? "Slave"
-          : "Master", getpid())
-        ;
+          : "Master", getpid());
       int ret;
       void *ctx;
       if (slaveMode)
@@ -327,21 +327,18 @@ exitFusion(bool slaveMode)
     }
   if (pool && !slaveMode)
     {
-      ILOG_DEBUG("Maestro-Master (pid: %d) is destroying DFB-Pool...", getpid())
-        ;
+      ILOG_DEBUG("Maestro-Master (pid: %d) is destroying DFB-Pool...", getpid());
       fusion_shm_pool_destroy(world, pool);
       pool = NULL;
     }
   if (world)
     {
       ILOG_DEBUG("Maestro-%s (pid: %d) is leaving DFB-World...", slaveMode ? "Slave"
-          : "Master", getpid())
-        ;
+          : "Master", getpid());
       fusion_exit(world, false);
       world = NULL;
     }
-  ILOG_INFO("Maestro (pid: %d) has left DFB-Fusion!", getpid())
-    ;
+  ILOG_INFO("Maestro (pid: %d) has left DFB-Fusion!", getpid());
 }
 
 //*****************************************************************
@@ -350,22 +347,10 @@ exitFusion(bool slaveMode)
 int
 initArenaCB(FusionArena *arena, void *ctx)
 {
-  ILOG_DEBUG("Maestro-Master is initialising DFB-Arena...")
-    ;
+  ILOG_DEBUG("Maestro-Master is initialising DFB-Arena...");
   maestro = (MaestroObject*) SHMALLOC(pool, sizeof(MaestroObject));
   fusion_arena_add_shared_field(arena, "MaestroObject", (void *) maestro);
   maestro->statusBarHeight = config.STATUSBAR_HEIGHT;
-
-  //  if (!strcmp(config.DESIGNER, "TDesigner"))
-  //    {
-  //      maestro->designer = (Designer*) SHMALLOC(pool, sizeof(TDesigner));
-  //      maestro->designer = new TDesigner(config.STYLESHEET);
-  //    }
-  //  else
-  //    {
-  //      maestro->designer = (Designer*) SHMALLOC(pool, sizeof(Designer));
-  //      maestro->designer = new Designer(config.STYLESHEET);
-  //    }
 
   maestro->pool = pool;
   maestro->OSK = (char*) SHMALLOC(pool, sizeof(char) * config.OSK_SIZE);
@@ -375,8 +360,7 @@ initArenaCB(FusionArena *arena, void *ctx)
   fusion_arena_add_shared_field(arena, "AppVector", (void *) appVector);
   fusion_vector_init(appVector, config.APP_VECTOR_SIZE, pool);
 
-  ILOG_INFO("Maesto-Master initialised DFB-Arena!")
-    ;
+  ILOG_INFO("Maesto-Master initialised DFB-Arena!");
   return 0;
 }
 
@@ -386,12 +370,10 @@ initArenaCB(FusionArena *arena, void *ctx)
 int
 joinArenaCB(FusionArena *arena, void *ctx)
 {
-  ILOG_DEBUG("Maestro-Slave is joining DFB-Arena...")
-    ;
+  ILOG_DEBUG("Maestro-Slave is joining DFB-Arena...");
   fusion_arena_get_shared_field(arena, "MaestroObject", (void **) &maestro);
   fusion_arena_get_shared_field(arena, "AppVector", (void **) &appVector);
-  ILOG_INFO("Maestro-Slave joined DFB-Arena!")
-    ;
+  ILOG_INFO("Maestro-Slave joined DFB-Arena!");
   return 0;
 }
 
@@ -401,8 +383,7 @@ joinArenaCB(FusionArena *arena, void *ctx)
 int
 cleanArenaCB(FusionArena *arena, void *ctx, bool emergency)
 {
-  ILOG_DEBUG("Maestro-Master is cleaning DFB-Arena...")
-    ;
+  ILOG_DEBUG("Maestro-Master is cleaning DFB-Arena...");
   fusion_vector_destroy(appVector);
   SHFREE(pool, appVector);
   if (maestro->reactor)
@@ -410,12 +391,9 @@ cleanArenaCB(FusionArena *arena, void *ctx, bool emergency)
       fusion_reactor_destroy(maestro->reactor);
       fusion_reactor_free(maestro->reactor);
     }
-  //  delete maestro->designer;
-  //  SHFREE(pool, maestro->designer);
   SHFREE(pool, maestro->OSK);
   SHFREE(pool, maestro);
-  ILOG_INFO("Maestro-Master cleaned DFB-Arena!")
-    ;
+  ILOG_INFO("Maestro-Master cleaned DFB-Arena!");
   return 0;
 }
 
@@ -425,8 +403,7 @@ cleanArenaCB(FusionArena *arena, void *ctx, bool emergency)
 void
 initDFB(int argc, char **argv)
 {
-  ILOG_DEBUG("Initialising DirectFB...")
-    ;
+  ILOG_DEBUG("Initialising DirectFB...");
   DFBCHECK(DirectFBInit(&argc, &argv));
   DFBCHECK(DirectFBCreate(&dfb));
   dfb->GetDeviceDescription(dfb, &deviceDescription);
@@ -449,8 +426,8 @@ initDFB(int argc, char **argv)
       DFBSurfaceDescription bgsurfaceDesc;
       IDirectFBImageProvider *provider;
       DFBCHECK(dfb->CreateImageProvider(dfb, config.BG_IMAGE, &provider));
-      bgsurfaceDesc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH
-          | DSDESC_HEIGHT | DSDESC_CAPS);
+      bgsurfaceDesc.flags = (DFBSurfaceDescriptionFlags)(
+          DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_CAPS);
       bgsurfaceDesc.width = layerConfig.width;
       bgsurfaceDesc.height = layerConfig.height;
       bgsurfaceDesc.caps = DSCAPS_SHARED;
@@ -473,8 +450,7 @@ initDFB(int argc, char **argv)
 void
 releaseDFB()
 {
-  ILOG_DEBUG("Releasing DFB interfaces...")
-    ;
+  ILOG_DEBUG("Releasing DFB interfaces...");
   layer->Release(layer);
   if (bgsurface)
     {
@@ -482,8 +458,7 @@ releaseDFB()
       bgsurface->ReleaseSource(bgsurface);
     }
   dfb->Release(dfb);
-  ILOG_INFO("DFB interfaces are released.")
-    ;
+  ILOG_INFO("DFB interfaces are released.");
 }
 
 //*****************************************************************
@@ -495,8 +470,7 @@ dispatchCB(int caller, int call_arg, void *call_ptr, void *ctx,
 {
   if (call_arg == 1)
     {
-      ILOG_DEBUG("Message received by fusionee.")
-        ;
+      ILOG_DEBUG("Message received by fusionee.");
       return FCHR_RETURN;
     }
   return FCHR_RETAIN;
@@ -527,8 +501,7 @@ reaction2StatusBar(ReactorMessage* msg)
     {
   case ModeRequest:
     {
-      ILOG_INFO("Received ModeRequest from StatusBar.")
-        ;
+      ILOG_INFO("Received ModeRequest from StatusBar.");
       if (msg->mode == Hidden)
         callApp(msg->senderFusionID, SwitchMode, Hidden);
       else if (msg->mode == Terminated)
@@ -537,8 +510,7 @@ reaction2StatusBar(ReactorMessage* msg)
         callApp(msg->senderFusionID, SwitchMode, Visible);
       else
         {
-          ILOG_ERROR("Requested mode is not supported for StatusBar!")
-            ;
+          ILOG_ERROR("Requested mode is not supported for StatusBar!");
           return RS_DROP;
         }
       break;
@@ -547,8 +519,7 @@ reaction2StatusBar(ReactorMessage* msg)
   case SwitchMode:
     {
       // NOTE msg->appIndex refers to applications Fusion ID.
-      ILOG_INFO("Received SwitchMode from StatusBar, target: %d.", msg->appID)
-        ;
+      ILOG_INFO("Received SwitchMode from StatusBar, target: %d.", msg->appID);
       if (msg->mode == Hidden)
         callApp(msg->appID, SwitchMode, Hidden);
       else if (msg->mode == Terminated)
@@ -561,21 +532,18 @@ reaction2StatusBar(ReactorMessage* msg)
         }
       else
         {
-          ILOG_ERROR("Requested mode is not supported for StatusBar!")
-            ;
+          ILOG_ERROR("Requested mode is not supported for StatusBar!");
           return RS_DROP;
         }
       break;
     }
 
   case Notification:
-    ILOG_INFO("Received Notification (%d) from StatusBar.", msg->mode)
-      ;
+    ILOG_INFO("Received Notification (%d) from StatusBar.", msg->mode);
     break;
 
   default:
-    ILOG_ERROR("StatusBar message type is not supported!")
-      ;
+    ILOG_ERROR("StatusBar message type is not supported!");
     return RS_DROP;
     }
   return RS_OK;
@@ -591,8 +559,7 @@ reaction2OSK(ReactorMessage* msg)
     {
   case ModeRequest:
     {
-      ILOG_INFO("Received ModeRequest from OSK.")
-        ;
+      ILOG_INFO("Received ModeRequest from OSK.");
       if (msg->mode == Hidden)
         callApp(3, SwitchMode, Hidden);
       else if (msg->mode == Terminated)
@@ -607,28 +574,24 @@ reaction2OSK(ReactorMessage* msg)
         }
       else
         {
-          ILOG_ERROR("Requested mode (%d) is not supported for OSK!", msg->mode)
-            ;
+          ILOG_ERROR("Requested mode (%d) is not supported for OSK!", msg->mode);
           return RS_DROP;
         }
       break;
     }
 
   case Notification:
-    ILOG_INFO("Received Notification (%d) from OSK.", msg->mode)
-      ;
+    ILOG_INFO("Received Notification (%d) from OSK.", msg->mode);
     break;
 
   case OSKEvent:
-    ILOG_INFO("Received OSKEvent from OSK.")
-      ;
+    ILOG_INFO("Received OSKEvent from OSK.");
     if (currentApp)
       callApp(currentApp->fusionID, OSKEvent, Ready);
     break;
 
   default:
-    ILOG_ERROR("OSK message type is not supported!")
-      ;
+    ILOG_ERROR("OSK message type is not supported!");
     return RS_DROP;
     }
   return RS_OK;
@@ -653,8 +616,7 @@ reaction2Application(ReactorMessage* msg)
     {
   case ModeRequest:
     {
-      ILOG_INFO("Received ModeRequest from %s (ID: %d).", app->title, msg->senderFusionID)
-        ;
+      ILOG_INFO("Received ModeRequest from %s (ID: %d).", app->title, msg->senderFusionID);
       switch (msg->mode)
         {
       case Visible:
@@ -666,8 +628,7 @@ reaction2Application(ReactorMessage* msg)
         return RS_OK;
 
       default:
-        ILOG_ERROR("ModeRequest mode (%d) is not supported!", msg->mode)
-          ;
+        ILOG_ERROR("ModeRequest mode (%d) is not supported!", msg->mode);
         return RS_DROP;
         }
     }
@@ -676,8 +637,7 @@ reaction2Application(ReactorMessage* msg)
     // This mode is only available for Home.
     if (msg->senderFusionID != 4)
       {
-        ILOG_ERROR("Message type is not supported!")
-          ;
+        ILOG_ERROR("Message type is not supported!");
         return RS_DROP;
       }
 
@@ -687,8 +647,7 @@ reaction2Application(ReactorMessage* msg)
         callApp(msg->appID, SwitchMode, Visible);
         return RS_OK;
       }
-    ILOG_ERROR("Requested mode is not supported for Home!")
-      ;
+    ILOG_ERROR("Requested mode is not supported for Home!");
     return RS_DROP;
 
   case Notification:
@@ -696,31 +655,26 @@ reaction2Application(ReactorMessage* msg)
       switch (msg->mode)
         {
       case Initialising:
-        ILOG_INFO( "ID: %d is initialising.", msg->senderFusionID)
-          ;
+        ILOG_INFO( "ID: %d is initialising.", msg->senderFusionID);
         return RS_OK;
 
       case Ready:
-        ILOG_INFO( "%s (ID: %d) is ready.", app->title, msg->senderFusionID)
-          ;
+        ILOG_INFO( "%s (ID: %d) is ready.", app->title, msg->senderFusionID);
         return RS_OK;
 
       case Visible:
-        ILOG_INFO( "ID: %d is visible.", msg->senderFusionID)
-          ;
+        ILOG_INFO( "ID: %d is visible.", msg->senderFusionID);
         currentApp = app;
         notifyStatusBar(currentApp->fusionID, Visible);
         return RS_OK;
 
       case Hidden:
-        ILOG_INFO( "%s (ID: %d) is hidden.", app->title, msg->senderFusionID)
-          ;
+        ILOG_INFO( "%s (ID: %d) is hidden.", app->title, msg->senderFusionID);
         return RS_OK;
 
       case Terminated:
         {
-          ILOG_INFO( "ID: %d is terminating.", msg->senderFusionID)
-            ;
+          ILOG_INFO( "ID: %d is terminating.", msg->senderFusionID);
           // if Home and StatusBar is still running show it.
           if (appVector->count >= 2 && msg->senderFusionID != 4)
             callApp(4, SwitchMode, Visible);
@@ -729,8 +683,7 @@ reaction2Application(ReactorMessage* msg)
           return RS_OK;
         }
       default:
-        ILOG_ERROR("Notification mode is not supported!")
-          ;
+        ILOG_ERROR("Notification mode is not supported!");
         return RS_DROP;
         }
     }
@@ -740,28 +693,24 @@ reaction2Application(ReactorMessage* msg)
       {
     case Visible:
       {
-        ILOG_DEBUG("Let OSK be Visible!")
-          ;
+        ILOG_DEBUG("Let OSK be Visible!");
         callApp(3, SwitchMode, Visible);
       }
       break;
     case Hidden:
       {
-        ILOG_DEBUG("Let OSK be Hidden!")
-          ;
+        ILOG_DEBUG("Let OSK be Hidden!");
         callApp(3, SwitchMode, Hidden);
       }
       break;
     default:
-      ILOG_ERROR("Notification mode is not supported!")
-        ;
+      ILOG_ERROR("Notification mode is not supported!");
       return RS_DROP;
       }
     return RS_OK;
 
   default:
-    ILOG_ERROR("Message type is not supported!")
-      ;
+    ILOG_ERROR("Message type is not supported!");
     return RS_DROP;
     }
 }
@@ -773,8 +722,7 @@ void
 callApp(int channel, ReactorMessageType type, AppMode mode)
 {
   ILOG_DEBUG("Sending %s mode via reactor using channel %d...",
-      (mode==Visible) ? "Visible" : (mode == Hidden) ? "Hidden": "Terminated", channel)
-    ;
+      (mode==Visible) ? "Visible" : (mode == Hidden) ? "Hidden": "Terminated", channel);
   ReactorMessage message(1, type, mode);
   fusion_reactor_dispatch_channel(maestro->reactor, channel, &message,
       sizeof(message), false, NULL);
@@ -786,8 +734,7 @@ callApp(int channel, ReactorMessageType type, AppMode mode)
 void
 notifyStatusBar(unsigned int AppIndex, AppMode mode)
 {
-  ILOG_DEBUG("Sending message to Statusbar ")
-    ;
+  ILOG_DEBUG("Sending message to Statusbar ");
   ReactorMessage message(1, Notification, mode, AppIndex);
   fusion_reactor_dispatch_channel(maestro->reactor, 2, &message,
       sizeof(message), false, NULL);
@@ -802,46 +749,40 @@ createFork(int argc, char **argv)
   pid_t child_pid = fork();
   if (child_pid < 0)
     {
-      ILOG_FATAL("Unable to start Maestro using fork()")
-        ;
+      ILOG_FATAL("Unable to start Maestro using fork()");
       exit( EXIT_FAILURE);
     }
   else if (child_pid > 0)
     {
-      ILOG_DEBUG("Parent is terminating...")
-        ;
+      ILOG_DEBUG("Parent is terminating...");
       exit( EXIT_SUCCESS);
     }
   else
     {
-      //      Logger::Instance()->setConsoleLevel(0);
       sleep(1);
       umask(0);
       pid_t sid = setsid();
       if (sid < 0)
         {
-          ILOG_FATAL("Unable to create a Session ID for Maestro!")
-            ;
+          ILOG_FATAL("Unable to create a Session ID for Maestro!");
           exit( EXIT_FAILURE);
         }
 
       if ((chdir(ILIXI_DATADIR)) < 0)
         {
-          ILOG_FATAL("Unable to change current working directory to %s!", ILIXI_DATADIR)
-            ;
+          ILOG_FATAL("Unable to change current working directory to %s!", ILIXI_DATADIR);
           exit( EXIT_FAILURE);
         }
 
-//      close( STDIN_FILENO);
-//      close( STDOUT_FILENO);
-//      close( STDERR_FILENO);
+      //      close( STDIN_FILENO);
+      //      close( STDOUT_FILENO);
+      //      close( STDERR_FILENO);
 
       if (initFusion())
         {
 
           initDFB(argc, argv);
-          ILOG_NOTICE("Maestro is running (pid: %d)", getpid())
-            ;
+          ILOG_NOTICE("Maestro (pid: %d) is running now!", getpid());
 
           int err;
           pid_t statusbar_id, osk_id, home_id;
@@ -851,70 +792,61 @@ createFork(int argc, char **argv)
           if ((err = posix_spawn(&statusbar_id, statArg[0], NULL, NULL,
               statArg, environ)) != 0)
             {
-              ILOG_ERROR("posix_spawn() error: %d", err)
-                ;
+              ILOG_ERROR("posix_spawn() error: %d", err);
               exit( EXIT_FAILURE);
             }
-          ILOG_DEBUG("StatusBar (%d) is running...", statusbar_id)
-            ;
+          ILOG_DEBUG("StatusBar (%d) is running...", statusbar_id);
 
-          while (fusion_vector_size(appVector) > 1)
-            usleep(1000);
-          sleep(1);
+          while (fusion_vector_size(appVector) < 1)
+            sleep(1);
 
           char *oskArg[] =
             { config.OSK, NULL };
           if ((err = posix_spawn(&osk_id, oskArg[0], NULL, NULL, oskArg,
               environ)) != 0)
             {
-              ILOG_ERROR("posix_spawn() error: %d", err)
-                ;
+              ILOG_ERROR("posix_spawn() error: %d", err);
               exit( EXIT_FAILURE);
             }
-          ILOG_DEBUG("OSK (%d) is running...", osk_id)
-            ;
+          ILOG_DEBUG("OSK (%d) is running...", osk_id);
 
-          while (fusion_vector_size(appVector) > 2)
-            usleep(1000);
-
-          sleep(1);
+          while (fusion_vector_size(appVector) < 2)
+            sleep(1);
 
           char *homeArg[] =
             { config.HOME, NULL };
           if ((err = posix_spawn(&home_id, homeArg[0], NULL, NULL, homeArg,
               environ)) != 0)
             {
-              ILOG_ERROR("posix_spawn() error: %d", err)
-                ;
+              ILOG_ERROR("posix_spawn() error: %d", err);
               exit( EXIT_FAILURE);
             }
-          ILOG_DEBUG("Home (%d) is running...", home_id)
-            ;
+          ILOG_DEBUG("Home (%d) is running...", home_id);
 
           int childExitStatus;
           pid_t ws = waitpid(statusbar_id, &childExitStatus, 0);
 
           if (!WIFEXITED(childExitStatus))
-            ILOG_ERROR("StatusBar exited with an error: %d", WEXITSTATUS(childExitStatus))
-              ;
+            ILOG_ERROR("StatusBar exited with an error: %d", WEXITSTATUS(childExitStatus));
           else if (WIFSIGNALED(childExitStatus))
-            ILOG_ERROR("StatusBar exited due to a signal: %d", WTERMSIG(childExitStatus))
-              ;
-else            ILOG_NOTICE("StatusBar is terminated, others should terminate as well.");
+            ILOG_ERROR("StatusBar exited due to a signal: %d", WTERMSIG(childExitStatus));
+          else
+            ILOG_NOTICE("StatusBar is terminated successfully; now terminating remaining applications.");
 
-            // Send message to all applications and wait until they are all terminated.
-            callApp(1, SwitchMode, Terminated);
-            while (fusion_vector_has_elements(appVector))
+          // Send message to all applications and wait until they are all terminated.
+          callApp(1, SwitchMode, Terminated);
+          while (fusion_vector_has_elements(appVector))
             sleep(1);
 
-            releaseDFB();
-            exitFusion();
-            ILOG_NOTICE("Maestro ends.");
-          }
-        else
+          releaseDFB();
+          exitFusion();
+          ILOG_NOTICE("Maestro ends.");
+        }
+      else
         exit( EXIT_FAILURE);
-      }
-  }
+      ILOG_CLOSE();
+    }
+}
 
 void
 parseConfig()
@@ -940,12 +872,10 @@ parseConfig()
   std::string file = ILIXI_DATADIR"maestro.conf";
   infile.open(file.c_str(), std::ifstream::in);
   if (infile.good())
-    ILOG_DEBUG("Parsing configuration file: %s", file.c_str())
-      ;
+    ILOG_DEBUG("Parsing configuration file: %s", file.c_str());
   else
     {
-      ILOG_FATAL("Unable to open configuration file: %s", file.c_str())
-        ;
+      ILOG_FATAL("Unable to open configuration file: %s", file.c_str());
       exit( EXIT_FAILURE);
     }
   while (infile.good())
@@ -955,8 +885,7 @@ parseConfig()
           != '\0')
         {
           sscanf(lineBuffer, "%s %*s %s", tag, value);
-          ILOG_DEBUG("%s: %s", tag, value)
-            ;
+          ILOG_DEBUG("%s: %s", tag, value);
           if (strcmp(tag, "WORLD_INDEX") == 0)
             config.WORLD_INDEX = atoi(value);
           else if (strcmp(tag, "POOL_SIZE") == 0)
@@ -994,11 +923,6 @@ parseConfig()
 
           else if (strcmp(tag, "OSK") == 0)
             sprintf(config.OSK, ILIXI_BINDIR"%s", value);
-
-          //          else if (strcmp(tag, "DESIGNER") == 0)
-          //            sprintf(config.DESIGNER, "%s", value);
-          //          else if (strcmp(tag, "STYLESHEET") == 0)
-          //            sprintf(config.STYLESHEET, "%s", value);
         }
     }
   infile.close();
@@ -1010,9 +934,16 @@ parseConfig()
 void
 printUsage()
 {
-  printf("\nOptions:\n");
-  printf("  --start\t\tStart Maestro\n");
-  printf("  --status\t\tList running applications\n\n");
+  printf("\nUsage: ilixi_maestro [OPTION...]\n");
+  printf("      --start                              Starts Maestro\n");
+  printf("      --stop                               Stops Maestro\n");
+  printf("      --restart                            Restarts Maestro\n");
+  printf(
+      "      --status                             List running applications\n");
+  printf(
+      "      --install <Path> <Title> <IconPath>  Adds an application to Home\n");
+  printf(
+      "      --uninstall <Path>                   Removes an application from Home\n\n");
 }
 
 //*****************************************************************
@@ -1023,17 +954,100 @@ main(int argc, char **argv)
     printUsage();
   else
     {
-      ILOG_OPEN(basename(argv[0]))
-        ;
+      ilixi_log_init(basename(argv[0]), LOG_DAEMON);
       if (strcmp(argv[1], "--start") == 0)
         start(argc, argv);
+      else if (strcmp(argv[1], "--stop") == 0)
+        {
+          stop();
+          ILOG_CLOSE();
+        }
+      else if (strcmp(argv[1], "--restart") == 0)
+        {
+          stop();
+          sleep(1);
+          start(argc, argv);
+        }
       else if (strcmp(argv[1], "--status") == 0)
         status();
+      else if (!strcmp(argv[1], "--install") && argc >= 4)
+        {
+          if (access(argv[2], F_OK) != 0)
+            {
+              ILOG_FATAL("File (%s) is not accessible!\n", argv[2]);
+              exit( EXIT_FAILURE);
+            }
+
+          if (argc == 5 && access(argv[4], F_OK) != 0)
+            {
+              ILOG_FATAL("Icon (%s) is not accessible!\n", argv[2]);
+              exit( EXIT_FAILURE);
+            }
+
+          sqlite3 *db;
+          char *errorMsg;
+          char query[1024];
+
+          if (sqlite3_open(ILIXI_DATADIR"ilixi.db", &db) != SQLITE_OK)
+            {
+              ILOG_FATAL("Can not open ilixi database.");
+              exit( EXIT_FAILURE);
+            }
+
+          sprintf(query, "delete from APPS where PATH like '%s'", argv[2]);
+          if (sqlite3_exec(db, query, NULL, NULL, &errorMsg) != SQLITE_OK)
+            {
+              ILOG_ERROR("SQL Error: %s", errorMsg);
+              sqlite3_free(errorMsg);
+            }
+
+          if (argc == 5)
+            sprintf(
+                query,
+                "insert into APPS (PATH, TITLE, ICON) VALUES('%s', '%s', '%s')",
+                argv[2], argv[3], argv[4]);
+          else if (argc == 4)
+            sprintf(
+                query,
+                "insert into APPS (PATH, TITLE, ICON) VALUES('%s', '%s', 'default')",
+                argv[2], argv[3]);
+
+          if (sqlite3_exec(db, query, NULL, NULL, &errorMsg) != SQLITE_OK)
+            {
+              ILOG_ERROR("SQL Error: %s", errorMsg);
+              sqlite3_free(errorMsg);
+            }
+
+          sqlite3_close(db);
+          ILOG_CLOSE();
+
+        }
+      else if (!strcmp(argv[1], "--uninstall") && argc == 3)
+        {
+          sqlite3 *db;
+          char *errorMsg;
+          char query[1024];
+
+          if (sqlite3_open(ILIXI_DATADIR"ilixi.db", &db) != SQLITE_OK)
+            {
+              ILOG_FATAL("Can not open ilixi database.");
+              exit( EXIT_FAILURE);
+            }
+
+          sprintf(query, "delete from APPS where PATH like '%s'", argv[2]);
+          if (sqlite3_exec(db, query, NULL, NULL, &errorMsg) != SQLITE_OK)
+            {
+              ILOG_ERROR("SQL Error: %s", errorMsg);
+              sqlite3_free(errorMsg);
+            }
+
+          sqlite3_close(db);
+          ILOG_CLOSE();
+        }
       else
         {
           printUsage();
-          ILOG_CLOSE()
-            ;
+          ILOG_CLOSE();
         }
     }
 }

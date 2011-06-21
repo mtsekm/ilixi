@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ILIXI_FUSION_HPP_
@@ -30,7 +32,6 @@ extern "C"
 #include <fusion/shmalloc.h>
 #include <fusion/call.h>
 #include <fusion/arena.h>
-#include <fusion/types.h>
 #include <fusion/vector.h>
 #include <fusion/reactor.h>
 }
@@ -40,7 +41,6 @@ extern "C"
 #include <unistd.h>
 #include <stdlib.h>
 #include <directfb.h>
-#include "graphics/Designer.h"
 
 namespace ilixi
 {
@@ -57,20 +57,15 @@ namespace ilixi
   //! Maestro creates a unique instance of this object in ilixi fusion world.
   struct MaestroObject
   {
-    //    //! Maestro dfb interface. Applications should not use this.
-    //    IDirectFB* dfbInterface;
     //! Pointer to ilixi dfb-fusion shared memory pool
     FusionSHMPoolShared* pool;
     //! Pointer to dfb-fusion reactor
     FusionReactor* reactor;
-    //    //! Pointer to designer.
-    //    Designer* designer;
     //! Pointer to OSK input.
     char* OSK;
-    // TODO: Add clipboard.
-    // char* clipboard;
     //! Height of statusbar application in pixels.
     int statusBarHeight;
+    // TODO: Add clipboard.
   };
 
   /*!
