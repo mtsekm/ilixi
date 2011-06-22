@@ -5,23 +5,24 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TextInput.h"
 #include "graphics/Painter.h"
-
 #include "core/Logger.h"
 
 using namespace ilixi;
@@ -104,8 +105,8 @@ TextInput::pointerButtonDownEvent(const PointerEvent& mouseEvent)
   Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
   p -= _layoutPosition;
   int index = 0;
-  bool rc = pango_layout_xy_to_index(_layout, p.x() * PANGO_SCALE, p.y()
-      * PANGO_SCALE, &index, NULL);
+  bool rc = pango_layout_xy_to_index(_layout, p.x() * PANGO_SCALE,
+      p.y() * PANGO_SCALE, &index, NULL);
 
   // fix last character
   if (index == _text.length() - 1 && !rc)
@@ -140,8 +141,8 @@ TextInput::pointerMotionEvent(const PointerEvent& mouseEvent)
       int index = 0;
       Point p = mapToSurface(Point(mouseEvent.x, mouseEvent.y));
       p -= _layoutPosition;
-      bool rc = pango_layout_xy_to_index(_layout, p.x() * PANGO_SCALE, p.y()
-          * PANGO_SCALE, &index, NULL);
+      bool rc = pango_layout_xy_to_index(_layout, p.x() * PANGO_SCALE,
+          p.y() * PANGO_SCALE, &index, NULL);
 
       // fix last character
       if (index == _text.length() - 1 && !rc)
@@ -292,10 +293,11 @@ TextInput::updateTextLayoutGeometry()
   Size s = textExtents();
   _cursor.setY((height() - s.height()) / 2);
   _cursor.setSize(2, s.height());
-  setTextGeometry(std::max(designer()->hint(TextInputFrameRadius),
-      designer()->hint(BorderWidth)), _cursor.y(), width() - 2
-      * designer()->hint(TextInputFrameRadius), height() - 2
-      * designer()->hint(BorderWidth));
+  setTextGeometry(
+      std::max(designer()->hint(TextInputFrameRadius),
+          designer()->hint(BorderWidth)), _cursor.y(),
+      width() - 2 * designer()->hint(TextInputFrameRadius),
+      height() - 2 * designer()->hint(BorderWidth));
 }
 
 void
@@ -303,8 +305,8 @@ TextInput::updateCursorPosition()
 {
   PangoRectangle weak;
   pango_layout_get_cursor_pos(_layout, _cursorIndex, NULL, &weak);
-  _cursor.moveTo(weak.x / PANGO_SCALE + _layoutPosition.x(), weak.y
-      + _layoutPosition.y());
+  _cursor.moveTo(weak.x / PANGO_SCALE + _layoutPosition.x(),
+      weak.y + _layoutPosition.y());
   if (_cursor.x() > _layoutPosition.x() + textLayoutWidth())
     {
       _layoutPosition.setX(-_layoutPosition.x());

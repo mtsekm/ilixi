@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "OSK.h"
@@ -128,8 +130,7 @@ OSK::reactorCB(ReactorMessage *msg, void *ctx)
 {
   if (msg->senderFusionID != 1)
     {
-      ILOG_ERROR("Sender is not authorised!")
-        ;
+      ILOG_ERROR("Sender is not authorised!");
       return RS_REMOVE;
     }
 
@@ -138,31 +139,29 @@ OSK::reactorCB(ReactorMessage *msg, void *ctx)
   case SwitchMode:
     if (msg->mode == Visible)
       {
-        ILOG_INFO("Received SwitchMode:Visible message from Maestro.")
-          ;
+        ILOG_INFO("Received SwitchMode:Visible message from Maestro.");
         _input->setText(getOSKText());
         show(Slide, _layerConfig.height, getStatusBarHeight());
         return RS_OK;
       }
     else if (msg->mode == Hidden)
       {
-        ILOG_INFO("Received SwitchMode:Hidden message from Maestro.")
-          ;
+        ILOG_INFO("Received SwitchMode:Hidden message from Maestro.");
         hide(Slide, getStatusBarHeight(), _layerConfig.height);
         return RS_OK;
       }
     else if (msg->mode == Terminated)
       {
-        ILOG_INFO("Received SwitchMode:Terminated message from Maestro.")
-          ;
+        ILOG_INFO("Received SwitchMode:Terminated message from Maestro.");
         quit();
         return RS_OK;
       }
-else      ILOG_ERROR("SwitchMode mode (%d) is not supported!", msg->mode);
-      break;
+    else
+      ILOG_ERROR("SwitchMode mode (%d) is not supported!", msg->mode);
+    break;
 
-      default:
-      ILOG_ERROR("Message type is not supported!");
+  default:
+    ILOG_ERROR("Message type is not supported!");
     }
   return RS_DROP;
 }
@@ -398,8 +397,6 @@ OSK::createKeys()
   keyLayout->addWidget(question);
   _keys.push_back(question);
 
-
-
   //***********************************************************************
   // ToolButtons (Row 4)
   //***********************************************************************
@@ -424,27 +421,30 @@ OSK::createKeys()
   OSKButton* left = new OSKButton("&lt;");
   left->setToolButtonStyle(ToolButton::IconOnly);
   left->setIcon(ILIXI_DATADIR"left_arrow.png");
-  left->sigClicked.connect(sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(
-      this, &OSK::append), DIKS_CURSOR_LEFT));
+  left->sigClicked.connect(
+      sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(this, &OSK::append),
+          DIKS_CURSOR_LEFT));
   keyLayout->addWidget(left);
 
   OSKButton* space = new OSKButton("Space");
   space->setToolButtonStyle(ToolButton::IconOnly);
   space->setIcon(ILIXI_DATADIR"space.png");
-  space->sigClicked.connect(sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(
-      this, &OSK::append), DIKS_SPACE));
+  space->sigClicked.connect(
+      sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(this, &OSK::append),
+          DIKS_SPACE));
   keyLayout->addWidget(space, 3, 4, 1, 2);
 
   OSKButton* right = new OSKButton("&gt;");
   right->setToolButtonStyle(ToolButton::IconOnly);
   right->setIcon(ILIXI_DATADIR"right_arrow.png");
-  right->sigClicked.connect(sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(
-      this, &OSK::append), DIKS_CURSOR_RIGHT));
+  right->sigClicked.connect(
+      sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(this, &OSK::append),
+          DIKS_CURSOR_RIGHT));
   keyLayout->addWidget(right);
 
   OSKButton* clr = new OSKButton("Clr");
   clr->setToolButtonStyle(ToolButton::IconOnly);
-  clr->setIcon(ILIXI_DATADIR"clear.png");
+  clr->setIcon(ILIXI_DATADIR"cancel.png");
   clr->sigClicked.connect(sigc::mem_fun(_input, &TextInput::clear));
   keyLayout->addWidget(clr);
 
@@ -452,15 +452,17 @@ OSK::createKeys()
   rturn->setToolButtonStyle(ToolButton::IconOnly);
   rturn->setIcon(ILIXI_DATADIR"return.png");
   rturn->setDisabled();
-  comma->sigClicked.connect(sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(
-      this, &OSK::append), DIKS_RETURN));
+  comma->sigClicked.connect(
+      sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(this, &OSK::append),
+          DIKS_RETURN));
   keyLayout->addWidget(rturn);
 
   OSKButton* backSpace = new OSKButton("&lt;-");
   backSpace->setToolButtonStyle(ToolButton::IconOnly);
   backSpace->setIcon(ILIXI_DATADIR"backspace.png");
-  backSpace->sigClicked.connect(sigc::bind<DFBInputDeviceKeySymbol>(
-      sigc::mem_fun(this, &OSK::append), DIKS_BACKSPACE));
+  backSpace->sigClicked.connect(
+      sigc::bind<DFBInputDeviceKeySymbol>(sigc::mem_fun(this, &OSK::append),
+          DIKS_BACKSPACE));
   keyLayout->addWidget(backSpace);
 
   addWidget(keyLayout);
