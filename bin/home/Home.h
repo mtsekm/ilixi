@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef HOME_H_
@@ -25,6 +27,7 @@
 #include "ui/Application.h"
 #include "ui/ToolButton.h"
 #include <vector>
+#include "lib/TweenAnimation.h"
 
 using namespace ilixi;
 
@@ -38,6 +41,24 @@ public:
 protected:
   virtual void
   compose(const Rectangle& rect);
+
+  /*!
+   * Starts/stops tweens.
+   */
+  virtual void
+  focusInEvent();
+
+  /*!
+   * Starts/stops tweens.
+   */
+  virtual void
+  focusOutEvent();
+
+private:
+  float _ch;
+  float _iconT;
+  TweenAnimation* _focusIn;
+  TweenAnimation* _focusOut;
 };
 
 class Home : public Application
@@ -53,7 +74,7 @@ private:
   {
     std::string title;
     std::string iconPath;
-    std::string path;
+    std::string basename;
   };
 
   std::vector<AppStruct> _apps;
