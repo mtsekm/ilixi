@@ -426,8 +426,8 @@ initDFB(int argc, char **argv)
       DFBSurfaceDescription bgsurfaceDesc;
       IDirectFBImageProvider *provider;
       DFBCHECK(dfb->CreateImageProvider(dfb, config.BG_IMAGE, &provider));
-      bgsurfaceDesc.flags = (DFBSurfaceDescriptionFlags)(
-          DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_CAPS);
+      bgsurfaceDesc.flags = (DFBSurfaceDescriptionFlags) (DSDESC_WIDTH
+          | DSDESC_HEIGHT | DSDESC_CAPS);
       bgsurfaceDesc.width = layerConfig.width;
       bgsurfaceDesc.height = layerConfig.height;
       bgsurfaceDesc.caps = DSCAPS_SHARED;
@@ -750,12 +750,12 @@ createFork(int argc, char **argv)
   if (child_pid < 0)
     {
       ILOG_FATAL("Unable to start Maestro using fork()");
-      exit( EXIT_FAILURE);
+      exit(EXIT_FAILURE);
     }
   else if (child_pid > 0)
     {
       ILOG_DEBUG("Parent is terminating...");
-      exit( EXIT_SUCCESS);
+      exit(EXIT_SUCCESS);
     }
   else
     {
@@ -765,13 +765,13 @@ createFork(int argc, char **argv)
       if (sid < 0)
         {
           ILOG_FATAL("Unable to create a Session ID for Maestro!");
-          exit( EXIT_FAILURE);
+          exit(EXIT_FAILURE);
         }
 
       if ((chdir(ILIXI_DATADIR)) < 0)
         {
           ILOG_FATAL("Unable to change current working directory to %s!", ILIXI_DATADIR);
-          exit( EXIT_FAILURE);
+          exit(EXIT_FAILURE);
         }
 
       //      close( STDIN_FILENO);
@@ -793,7 +793,7 @@ createFork(int argc, char **argv)
               statArg, environ)) != 0)
             {
               ILOG_ERROR("posix_spawn() error: %d", err);
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
           ILOG_DEBUG("StatusBar (%d) is running...", statusbar_id);
 
@@ -806,7 +806,7 @@ createFork(int argc, char **argv)
               environ)) != 0)
             {
               ILOG_ERROR("posix_spawn() error: %d", err);
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
           ILOG_DEBUG("OSK (%d) is running...", osk_id);
 
@@ -819,7 +819,7 @@ createFork(int argc, char **argv)
               environ)) != 0)
             {
               ILOG_ERROR("posix_spawn() error: %d", err);
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
           ILOG_DEBUG("Home (%d) is running...", home_id);
 
@@ -843,7 +843,7 @@ createFork(int argc, char **argv)
           ILOG_NOTICE("Maestro ends.");
         }
       else
-        exit( EXIT_FAILURE);
+        exit(EXIT_FAILURE);
       ILOG_CLOSE();
     }
 }
@@ -876,7 +876,7 @@ parseConfig()
   else
     {
       ILOG_FATAL("Unable to open configuration file: %s", file.c_str());
-      exit( EXIT_FAILURE);
+      exit(EXIT_FAILURE);
     }
   while (infile.good())
     {
@@ -954,7 +954,9 @@ main(int argc, char **argv)
     printUsage();
   else
     {
+#if ILIXI_LOGGER_ENABLED
       ilixi_log_init(basename(argv[0]), LOG_DAEMON);
+#endif
       if (strcmp(argv[1], "--start") == 0)
         start(argc, argv);
       else if (strcmp(argv[1], "--stop") == 0)
@@ -975,13 +977,13 @@ main(int argc, char **argv)
           if (access(argv[2], F_OK) != 0)
             {
               ILOG_FATAL("File (%s) is not accessible!\n", argv[2]);
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
 
           if (argc == 5 && access(argv[4], F_OK) != 0)
             {
               ILOG_FATAL("Icon (%s) is not accessible!\n", argv[2]);
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
 
           sqlite3 *db;
@@ -991,7 +993,7 @@ main(int argc, char **argv)
           if (sqlite3_open(ILIXI_DATADIR"ilixi.db", &db) != SQLITE_OK)
             {
               ILOG_FATAL("Can not open ilixi database.");
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
 
           sprintf(query, "delete from APPS where PATH like '%s'", argv[2]);
@@ -1031,7 +1033,7 @@ main(int argc, char **argv)
           if (sqlite3_open(ILIXI_DATADIR"ilixi.db", &db) != SQLITE_OK)
             {
               ILOG_FATAL("Can not open ilixi database.");
-              exit( EXIT_FAILURE);
+              exit(EXIT_FAILURE);
             }
 
           sprintf(query, "delete from APPS where PATH like '%s'", argv[2]);
