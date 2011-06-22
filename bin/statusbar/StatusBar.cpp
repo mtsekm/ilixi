@@ -5,18 +5,20 @@
 
  Written by Tarik Sekmen <tarik@ilixi.org>.
 
+ This file is part of ilixi.
+
  ilixi is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Lesser General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  ilixi is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with ilixi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "StatusBar.h"
@@ -72,7 +74,7 @@ StatusBar::StatusBar(int argc, char* argv[]) :
   _home = new ToolButton("Home");
   _home->setInputMethod(PointerInputOnly);
   _home->setToolButtonStyle(ToolButton::IconOnly);
-  _home->setIcon(ILIXI_DATADIR"home.png", Size(48, 48));
+  _home->setIcon(ILIXI_DATADIR"home.png", Size(32, 32));
   addWidget(_home);
 
   addWidget(new Line(Line::Vertical));
@@ -108,7 +110,7 @@ StatusBar::StatusBar(int argc, char* argv[]) :
   _shutDown = new ToolButton("STANDBY");
   _shutDown->setToolButtonStyle(ToolButton::IconOnly);
   _shutDown->setInputMethod(PointerInputOnly);
-  _shutDown->setIcon(ILIXI_DATADIR"shutdown.png", Size(48, 48));
+  _shutDown->setIcon(ILIXI_DATADIR"shutdown.png", Size(32, 32));
   addWidget(_shutDown);
 
   _sDialog = new SDialog("Choose an action", this);
@@ -152,7 +154,8 @@ StatusBar::updateTime()
 
   char date[11];
   sprintf(date, "%s %d %s", days[tm->tm_wday], tm->tm_mday, months[tm->tm_mon]);
-  _date->setText(date);
+  if (strcmp(date, _date->text().c_str()))
+    _date->setText(date);
 }
 
 ReactionResult
@@ -183,35 +186,36 @@ StatusBar::reactorCB(ReactorMessage *msg, void *ctx)
         quit();
         return RS_OK;
       }
-else      ILOG_ERROR("Message mode is not supported!");
-      break;
+    else
+      ILOG_ERROR("Message mode is not supported!");
+    break;
 
-      case Notification:
+  case Notification:
 
-      if (msg->mode == Visible)
-        {
-          AppRecord* app = getAppRecord(msg->appID);
-          _currentAppID = msg->appID;
-          _app->setText((std::string) app->title);
-          ILOG_INFO("%s (ID: %d) is visible.", app->title, app->fusionID);
+    if (msg->mode == Visible)
+      {
+        AppRecord* app = getAppRecord(msg->appID);
+        _currentAppID = msg->appID;
+        _app->setText((std::string) app->title);
+        ILOG_INFO("%s (ID: %d) is visible.", app->title, app->fusionID);
 
-          if (_currentAppID == 4) // Notification comes from Home app.
+        if (_currentAppID == 4) // Notification comes from Home app.
 
-            {
-              _home->setDisabled();
-              _sDialog->setKillVisibility(false);
-            }
-          else
-            {
-              _home->setEnabled();
-              _sDialog->setKillVisibility(true);
-              _sDialog->setAppName((std::string) app->title);
-            }
-        }
-      break;
+          {
+            _home->setDisabled();
+            _sDialog->setKillVisibility(false);
+          }
+        else
+          {
+            _home->setEnabled();
+            _sDialog->setKillVisibility(true);
+            _sDialog->setAppName((std::string) app->title);
+          }
+      }
+    break;
 
-      default:
-      ILOG_ERROR("Message type is not supported!");
+  default:
+    ILOG_ERROR("Message type is not supported!");
     }
   return RS_DROP;
 }
@@ -264,4 +268,3 @@ main(int argc, char* argv[])
   app.exec();
   return 0;
 }
-
